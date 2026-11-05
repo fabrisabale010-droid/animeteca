@@ -1,0 +1,1089 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Animeteca — anime de la A a la Z</title>
+<meta name="description" content="Catálogo de anime con descripción, personajes y un índice alfabético para marcar lo que estás viendo.">
+<meta name="theme-color" content="#07080d">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Sora:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#07080d; --s1:#0e1019; --s2:#151827; --line:#232740; --line2:#363b60;
+  --tx:#eef0fa; --mut:#8f95b2; --soft:#b9bed6;
+  --violet:#7b61ff; --blue:#5b8bff; --cyan:#3cd3ff; --ok:#3ddc97; --bad:#ff5d73;
+  --hh:calc(58px + env(safe-area-inset-top,0px));
+}
+*{box-sizing:border-box;margin:0}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth;scroll-padding-top:calc(var(--hh) + 70px);-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--tx);font:400 16px/1.55 'DM Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden;padding-bottom:env(safe-area-inset-bottom,0px)}
+body.lock{overflow:hidden}
+h1,h2,h3,h4{font-family:'Sora',system-ui,sans-serif;line-height:1.15;letter-spacing:-.015em;font-weight:600}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+img{display:block;max-width:100%}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+.wrap{width:min(1200px,100% - 32px);margin-inline:auto}
+.muted{color:var(--mut)}
+
+/* ---------- Header ---------- */
+.hdr{position:sticky;top:0;z-index:50;height:var(--hh);padding-top:env(safe-area-inset-top,0px);background:rgba(7,8,13,.74);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.hdr .wrap{height:100%;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;font:700 1.12rem 'Sora',sans-serif;letter-spacing:-.02em}
+.logo img{width:30px;height:30px;border-radius:9px}
+.nav{display:flex;gap:4px}
+.nav a{padding:8px 14px;border-radius:999px;text-decoration:none;color:var(--soft);font-weight:500;font-size:.95rem}
+.nav a:hover{background:rgba(255,255,255,.06);color:#fff}
+.hact{display:flex;gap:8px;align-items:center}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 22px;border-radius:999px;font-weight:700;text-decoration:none;white-space:nowrap;transition:transform .15s,box-shadow .15s}
+.btn:active{transform:scale(.98)}
+.btn.pri{background:linear-gradient(135deg,var(--violet),var(--blue));color:#fff;box-shadow:0 10px 32px -10px rgba(123,97,255,.8)}
+.btn.pri:hover{box-shadow:0 14px 40px -10px rgba(123,97,255,.95)}
+.btn.ghost{border:1px solid var(--line2);background:rgba(255,255,255,.03)}
+.btn.ghost:hover{background:rgba(255,255,255,.07)}
+.btn.sm{padding:8px 16px;font-size:.9rem}
+.pill-n{display:inline-block;min-width:22px;padding:1px 7px;border-radius:999px;background:rgba(255,255,255,.14);font-size:.78rem;text-align:center}
+
+/* ---------- Hero ---------- */
+.hero{position:relative;padding:64px 0 36px;overflow:hidden;isolation:isolate}
+.hero::before{content:"";position:absolute;inset:-10% -10% auto;height:130%;z-index:-2;background:radial-gradient(620px 380px at 78% 32%,rgba(123,97,255,.38),transparent 70%),radial-gradient(520px 320px at 12% 8%,rgba(60,211,255,.16),transparent 70%)}
+.hero::after{content:"";position:absolute;inset:0;z-index:-1;background-image:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px);background-size:56px 56px;-webkit-mask-image:radial-gradient(ellipse at 62% 34%,#000 8%,transparent 68%);mask-image:radial-gradient(ellipse at 62% 34%,#000 8%,transparent 68%)}
+.hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:center}
+.hero h1{font-size:clamp(2.35rem,5.4vw,4.3rem);font-weight:700;letter-spacing:-.03em;max-width:12ch}
+.hero p.lead{margin-top:20px;font-size:1.1rem;color:var(--soft);max-width:46ch}
+.hero .cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
+.hero .fine{margin-top:22px;color:var(--mut);font-size:.9rem;min-height:1.4em}
+.fan{--k:1;position:relative;height:calc(470px*var(--k));perspective:1300px}
+.fan-in{position:absolute;inset:0;transform-style:preserve-3d;animation:drift 9s ease-in-out infinite}
+@keyframes drift{0%,100%{transform:rotateX(5deg) rotateY(-7deg)}50%{transform:rotateX(1deg) rotateY(-2deg)}}
+.fc{position:absolute;left:50%;top:50%;width:calc(176px*var(--k));aspect-ratio:2/3;border-radius:18px;overflow:hidden;border:1px solid rgba(255,255,255,.16);background:var(--s2);box-shadow:0 30px 60px -20px rgba(0,0,0,.8),0 0 0 1px rgba(0,0,0,.4);transform:translate(-50%,-50%) translateX(calc(var(--x)*var(--k))) translateZ(var(--z)) rotateY(var(--ry)) rotateZ(var(--rz));padding:0}
+.fc img{width:100%;height:100%;object-fit:cover}
+.fc:nth-child(1){--x:0px;--ry:0deg;--rz:0deg;--z:70px;z-index:5}
+.fc:nth-child(2){--x:-128px;--ry:22deg;--rz:-4deg;--z:0px;z-index:4}
+.fc:nth-child(3){--x:128px;--ry:-22deg;--rz:4deg;--z:0px;z-index:4}
+.fc:nth-child(4){--x:-238px;--ry:36deg;--rz:-8deg;--z:-80px;z-index:3}
+.fc:nth-child(5){--x:238px;--ry:-36deg;--rz:8deg;--z:-80px;z-index:3}
+.ph{background:linear-gradient(110deg,var(--s2) 30%,#1e2238 50%,var(--s2) 70%);background-size:200% 100%;animation:shim 1.6s linear infinite}
+@keyframes shim{to{background-position:-200% 0}}
+
+/* ---------- Marquee ---------- */
+.mq-sec{padding:18px 0 8px;border-block:1px solid var(--line);background:rgba(255,255,255,.015)}
+.mq-row{display:flex;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);margin-bottom:10px}
+.mq-track{display:flex;gap:10px;flex:none;padding-right:10px;animation:mq 70s linear infinite}
+.mq-row.rev .mq-track{animation-direction:reverse;animation-duration:85s}
+.mq-row:hover .mq-track{animation-play-state:paused}
+@keyframes mq{to{transform:translateX(-100%)}}
+.mq{flex:none;width:86px;aspect-ratio:2/3;border-radius:12px;overflow:hidden;padding:0;border:1px solid var(--line);opacity:.82;transition:opacity .15s,border-color .15s}
+.mq:hover{opacity:1;border-color:var(--cyan)}
+.mq img{width:100%;height:100%;object-fit:cover}
+
+/* ---------- App ---------- */
+section.blk{padding:76px 0}
+.sec-h{margin-bottom:30px;max-width:60ch}
+.sec-h h2{font-size:clamp(1.7rem,3.4vw,2.5rem);letter-spacing:-.025em}
+.sec-h p{margin-top:10px;color:var(--soft)}
+.apphead{display:flex;flex-wrap:wrap;gap:16px;align-items:end;justify-content:space-between;margin-bottom:20px}
+.tabs{display:inline-flex;padding:4px;border-radius:999px;background:var(--s1);border:1px solid var(--line)}
+.tab{padding:9px 20px;border-radius:999px;font-weight:700;color:var(--mut);font-size:.95rem}
+.tab[aria-selected=true]{background:linear-gradient(135deg,var(--violet),var(--blue));color:#fff}
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px}
+.inp,.sel{height:44px;border-radius:12px;border:1px solid var(--line);background:var(--s1);color:var(--tx);padding:0 14px;font:inherit}
+.inp{flex:1 1 240px;min-width:0}
+.inp::placeholder{color:var(--mut)}
+.sel{padding-right:8px}
+.vbtns{display:inline-flex;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--s1)}
+.vbtns button{width:46px;height:42px;display:grid;place-items:center;color:var(--mut)}
+.vbtns button[aria-pressed=true]{background:var(--s2);color:#fff}
+.lbar{position:sticky;top:var(--hh);z-index:20;display:flex;gap:6px;overflow-x:auto;padding:10px 4px 8px;margin:0 -4px 10px;background:linear-gradient(var(--bg) 82%,rgba(7,8,13,0));scrollbar-width:none}
+.lbar::-webkit-scrollbar{display:none}
+.lbtn{position:relative;flex:0 0 auto;min-width:38px;height:38px;padding:0 10px;border-radius:10px;border:1px solid var(--line);background:var(--s1);font:700 .9rem 'Sora',sans-serif;color:var(--tx)}
+.lbtn:hover{border-color:var(--line2)}
+.lbtn.act{background:linear-gradient(135deg,var(--violet),var(--blue));border-color:transparent;color:#fff}
+.lbtn[data-n]::after{content:attr(data-n);position:absolute;top:-5px;right:-4px;min-width:17px;height:17px;padding:0 4px;border-radius:9px;background:var(--ok);color:#06150e;font:700 10px/17px 'DM Sans',sans-serif;text-align:center}
+.lbtn[data-empty]{opacity:.38}
+.hint{color:var(--mut);font-size:.86rem;margin-bottom:6px}
+.count{color:var(--soft);font-size:.9rem;margin:6px 0 14px;min-height:1.4em}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px}
+.card{position:relative;display:grid;grid-template-columns:104px 1fr;column-gap:14px;padding:10px;background:var(--s1);border:1px solid var(--line);border-radius:18px;cursor:pointer;transition:border-color .15s,background .15s;content-visibility:auto;contain-intrinsic-size:auto 176px;grid-template-rows:1fr auto}
+.card:hover{border-color:var(--line2);background:#121524}
+.card[data-st=watching]{border-color:rgba(60,211,255,.5)}
+.card[data-st=done]{border-color:rgba(61,220,151,.5)}
+.card[data-st=plan]{border-color:rgba(123,97,255,.55)}
+.card[data-st=drop]{border-color:rgba(255,93,115,.4)}
+.poster{grid-row:1 / span 2;width:104px;aspect-ratio:2/3;border-radius:12px;overflow:hidden;background:var(--s2)}
+.poster img{width:100%;height:100%;object-fit:cover}
+.cbody{min-width:0;display:flex;flex-direction:column;gap:3px}
+.cbody h3{font-size:1rem;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.cbody h3 button{text-align:left;font:inherit;letter-spacing:inherit}
+.alt{color:var(--mut);font-size:.8rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.meta{display:flex;flex-wrap:wrap;gap:2px 0;color:var(--mut);font-size:.8rem}
+.meta span+span{margin-left:8px;padding-left:8px;border-left:1px solid var(--line2)}
+.meta .sc{color:#ffd166}
+.syn{color:var(--soft);font-size:.86rem;line-height:1.45;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;margin-top:2px}
+.cfoot{grid-column:2;margin-top:auto;padding-top:8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.stbtn{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border-radius:999px;border:1px solid var(--line2);background:var(--s2);font-weight:700;font-size:.82rem;color:var(--soft);min-height:34px}
+.stbtn:hover{border-color:#5a6091;color:#fff}
+.stbtn[data-st=watching]{background:var(--cyan);border-color:transparent;color:#04141a}
+.stbtn[data-st=done]{background:var(--ok);border-color:transparent;color:#06150e}
+.stbtn[data-st=plan]{background:var(--violet);border-color:transparent;color:#fff}
+.stbtn[data-st=drop]{background:var(--bad);border-color:transparent;color:#fff}
+.epbox{display:inline-flex;align-items:center;gap:6px;font-size:.82rem;color:var(--soft)}
+.epbox button{height:30px;padding:0 10px;border-radius:999px;border:1px solid var(--line2);font-weight:700}
+.epbox button:hover{border-color:var(--cyan);color:#fff}
+.grid.list{grid-template-columns:repeat(auto-fill,minmax(420px,1fr));gap:8px}
+.grid.list .card{grid-template-columns:46px 1fr auto;grid-template-rows:auto;align-items:center;padding:8px 12px;border-radius:14px;contain-intrinsic-size:auto 64px}
+.grid.list .poster{grid-row:auto;width:46px;border-radius:8px}
+.grid.list .syn,.grid.list .alt{display:none}
+.grid.list .cfoot{grid-column:auto;margin:0;padding:0}
+.grid.list .cbody h3{font-size:.95rem;-webkit-line-clamp:1}
+.sk{height:176px;border-radius:18px}
+.msg{padding:26px;border:1px dashed var(--line2);border-radius:18px;text-align:center;color:var(--soft);margin:10px 0}
+.msg .btn{margin-top:14px}
+.more{display:flex;justify-content:center;padding:22px 0 4px}
+
+/* Mi lista */
+.sumrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px}
+.chip{display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--s1);font-weight:700;font-size:.88rem;color:var(--soft)}
+.chip i{font-style:normal;font-weight:700;color:var(--mut)}
+.chip.act{background:var(--s2);border-color:var(--line2);color:#fff}
+.prog{height:8px;border-radius:99px;background:var(--s2);overflow:hidden;flex:1 1 180px;min-width:140px}
+.prog b{display:block;height:100%;background:linear-gradient(90deg,var(--ok),var(--cyan));border-radius:99px;transition:width .3s}
+.progtx{font-size:.88rem;color:var(--soft)}
+.tools{display:flex;flex-wrap:wrap;gap:10px;margin:8px 0 16px}
+.grp{margin-top:22px}
+.gh{display:flex;align-items:center;gap:10px;margin-bottom:12px;font-size:1.3rem}
+.gh .gl{display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--violet),var(--blue))}
+.gh i{font:500 .85rem 'DM Sans',sans-serif;color:var(--mut)}
+
+/* Personajes */
+.chr-row{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x proximity;padding:4px 2px 14px;scrollbar-width:thin}
+.chr{flex:0 0 156px;scroll-snap-align:start}
+.chr .im{aspect-ratio:3/4;border-radius:18px;overflow:hidden;background:var(--s2);border:1px solid var(--line)}
+.chr img{width:100%;height:100%;object-fit:cover}
+.chr b{display:block;margin-top:8px;font:600 .92rem/1.25 'Sora',sans-serif}
+.chr span{color:var(--mut);font-size:.82rem}
+
+/* Cómo funciona */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.step{background:var(--s1);border:1px solid var(--line);border-radius:22px;padding:22px;display:flex;flex-direction:column;gap:14px}
+.step .vis{height:150px;border-radius:14px;background:radial-gradient(240px 140px at 50% 0%,rgba(123,97,255,.22),transparent 70%),var(--s2);display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap;padding:14px;overflow:hidden}
+.step .n{font:700 .85rem 'Sora',sans-serif;color:var(--cyan)}
+.step h3{font-size:1.2rem}
+.step p{color:var(--soft);font-size:.95rem}
+.vis .lb{height:34px;min-width:34px;padding:0 8px;display:grid;place-items:center;border-radius:9px;border:1px solid var(--line2);font:700 .85rem 'Sora',sans-serif;background:var(--s1)}
+.vis .lb.on{background:linear-gradient(135deg,var(--violet),var(--blue));border-color:transparent}
+.vis .av{width:74px;height:98px;border-radius:14px;overflow:hidden;border:2px solid var(--bg);margin-left:-18px;background:var(--s1)}
+.vis .av:first-child{margin-left:0}
+.vis .av img{width:100%;height:100%;object-fit:cover}
+
+/* FAQ */
+.faq{max-width:820px}
+.faq details{border-bottom:1px solid var(--line);padding:4px 0}
+.faq summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;gap:16px;padding:16px 0;font:600 1.05rem 'Sora',sans-serif}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";font-size:1.4rem;line-height:1;color:var(--cyan);transition:transform .2s}
+.faq details[open] summary::after{transform:rotate(45deg)}
+.faq details p{color:var(--soft);padding:0 0 18px;max-width:64ch}
+
+/* CTA + footer */
+.cta-sec{position:relative;text-align:center;padding:90px 0;overflow:hidden;isolation:isolate}
+.cta-sec::before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(560px 300px at 50% 100%,rgba(123,97,255,.34),transparent 70%)}
+.cta-sec h2{font-size:clamp(1.9rem,4.4vw,3.2rem);letter-spacing:-.03em;max-width:18ch;margin:0 auto}
+.cta-sec p{color:var(--soft);margin:14px auto 28px;max-width:46ch}
+.ftr{border-top:1px solid var(--line);padding:28px 0 40px;color:var(--mut);font-size:.88rem}
+.ftr .wrap{display:flex;flex-wrap:wrap;gap:12px 28px;justify-content:space-between}
+
+/* ---------- Modal ---------- */
+dialog{color:var(--tx)}
+dialog::backdrop{background:rgba(3,4,8,.74);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+dialog.modal{width:min(900px,100% - 24px);max-width:none;max-height:calc(100dvh - 24px);margin:auto;padding:0;border:1px solid var(--line2);border-radius:24px;background:var(--s1);overflow:hidden}
+.mwrap{position:relative;max-height:calc(100dvh - 24px);overflow:auto;padding:24px;overscroll-behavior:contain}
+.mclose{position:sticky;top:0;float:right;z-index:3;width:40px;height:40px;margin:-6px -6px 0 8px;border-radius:50%;background:rgba(7,8,13,.85);border:1px solid var(--line2);display:grid;place-items:center;font-size:1.05rem}
+.mhead{display:grid;grid-template-columns:200px 1fr;gap:22px;margin-bottom:22px}
+.mposter{width:200px;aspect-ratio:2/3;border-radius:16px;overflow:hidden;background:var(--s2);border:1px solid var(--line)}
+.mposter img{width:100%;height:100%;object-fit:cover}
+.minfo h2{font-size:clamp(1.4rem,3vw,2rem);letter-spacing:-.02em}
+.minfo .jp{color:var(--mut);margin-top:4px;font-size:.95rem}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}
+.tag{padding:5px 11px;border-radius:999px;background:var(--s2);border:1px solid var(--line);font-size:.82rem;color:var(--soft)}
+.tag.sc{color:#ffd166}
+.mstat{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.stc{min-height:40px}
+.stc.act{background:var(--c);border-color:transparent;color:#07080d}
+.mprog{display:flex;align-items:center;gap:10px;margin-top:14px;color:var(--soft)}
+.mprog button{width:38px;height:38px;border-radius:50%;border:1px solid var(--line2);font-size:1.2rem;font-weight:700}
+.mprog button:hover{border-color:var(--cyan)}
+.mprog b{font:700 1.05rem 'Sora',sans-serif;min-width:64px;text-align:center}
+.msec{margin-top:24px}
+.msec h4{font-size:1.05rem;margin-bottom:10px}
+.msyn{color:var(--soft);white-space:pre-line;max-width:70ch}
+.linkbtn{margin-top:10px;color:var(--cyan);font-weight:700;font-size:.9rem}
+.linkbtn:hover{text-decoration:underline}
+.chars{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:14px}
+.char .im{aspect-ratio:3/4;border-radius:14px;overflow:hidden;background:var(--s2);border:1px solid var(--line)}
+.char img{width:100%;height:100%;object-fit:cover}
+.char b{display:block;margin-top:7px;font-size:.84rem;line-height:1.25;font-weight:700}
+.char span{font-size:.76rem;color:var(--mut)}
+.mlinks{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}
+
+/* Sheet */
+dialog.sheet{width:min(420px,100% - 24px);max-width:none;margin:auto;padding:0;border:1px solid var(--line2);border-radius:22px;background:var(--s1)}
+.shin{padding:18px}
+.sh-t{font:600 1.02rem 'Sora',sans-serif;margin-bottom:14px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.shopt{display:flex;align-items:center;gap:12px;width:100%;padding:14px 16px;margin-bottom:8px;border-radius:14px;border:1px solid var(--line);background:var(--s2);font-weight:700;text-align:left}
+.shopt span{width:24px;text-align:center}
+.shopt.act{border-color:var(--cyan)}
+.shopt.rm{color:var(--bad)}
+.shopt:hover{border-color:var(--line2)}
+.sh-x{width:100%;padding:12px;color:var(--mut);font-weight:700}
+
+.toast{position:fixed;inset:auto 0 calc(22px + env(safe-area-inset-bottom,0px)) 0;margin:0 auto;width:max-content;max-width:calc(100% - 32px);border:1px solid var(--line2);background:var(--s2);color:var(--tx);padding:11px 18px;border-radius:14px;font-weight:500;box-shadow:0 16px 40px -12px rgba(0,0,0,.8)}
+
+/* ---------- Responsive ---------- */
+@media (max-width:900px){
+  .hero{padding-top:36px}
+  .hero-grid{grid-template-columns:1fr}
+  .hero h1{max-width:14ch}
+  .fan{--k:.78;margin-top:6px}
+  .steps{grid-template-columns:1fr}
+  .nav{display:none}
+}
+@media (max-width:640px){
+  section.blk{padding:52px 0}
+  .fan{--k:.62}
+  .grid,.grid.list{grid-template-columns:1fr}
+  .card{grid-template-columns:92px 1fr}
+  .poster{width:92px}
+  dialog.modal{width:100%;height:100dvh;max-height:none;margin:0;border-radius:0;border:0}
+  .mwrap{max-height:100dvh;padding:18px 16px calc(24px + env(safe-area-inset-bottom,0px))}
+  .mhead{grid-template-columns:116px 1fr;gap:14px}
+  .mposter{width:116px;border-radius:12px}
+  .hact .btn.ghost{display:none}
+  .tab{padding:9px 16px}
+  dialog.sheet{width:100%;margin:auto 0 0;border-radius:22px 22px 0 0;border-bottom:0}
+  .shin{padding:18px 18px calc(18px + env(safe-area-inset-bottom,0px))}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .fan-in,.mq-track,.ph{animation:none}
+  .mq-row{overflow-x:auto}
+}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div class="wrap">
+    <a class="logo" href="#top"><img src="icon-192.png" alt="" width="30" height="30">Animeteca</a>
+    <nav class="nav" aria-label="Secciones">
+      <a href="#app" data-tab="explore">Explorar</a>
+      <a href="#app" data-tab="mine">Mi lista</a>
+      <a href="#como">Cómo funciona</a>
+      <a href="#faq">Preguntas</a>
+    </nav>
+    <div class="hact">
+      <button class="btn ghost sm" id="installBtn" hidden>Instalar app</button>
+      <a class="btn pri sm" href="#app" data-tab="mine">Mi lista <span class="pill-n" id="navCount">0</span></a>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <h1>Todo el anime, de la A a la Z</h1>
+      <p class="lead">Descripción, fotos de los personajes principales y un índice alfabético para marcar lo que estás viendo. Funciona en la compu y en el celu.</p>
+      <div class="cta">
+        <a class="btn pri" href="#app" data-tab="explore">Explorar el catálogo</a>
+        <a class="btn ghost" href="#app" data-tab="mine">Ver mi lista</a>
+      </div>
+      <p class="fine" id="heroCount">Conectando con el catálogo…</p>
+    </div>
+    <div class="fan" aria-label="Los anime mejor puntuados">
+      <div class="fan-in" id="fan">
+        <div class="fc ph"></div><div class="fc ph"></div><div class="fc ph"></div><div class="fc ph"></div><div class="fc ph"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="mq-sec" id="mqSec" hidden aria-label="Anime más valorados">
+  <div class="mq-row" id="mq1"></div>
+  <div class="mq-row rev" id="mq2"></div>
+</section>
+
+<section class="blk" id="app">
+  <div class="wrap">
+    <div class="apphead">
+      <div class="sec-h" style="margin:0">
+        <h2>Tu índice de anime</h2>
+        <p>Elegí una letra, abrí un título y marcá su estado.</p>
+      </div>
+      <div class="tabs" role="tablist">
+        <button class="tab" role="tab" id="tabExplore" aria-selected="true" data-tab="explore">Explorar</button>
+        <button class="tab" role="tab" id="tabMine" aria-selected="false" data-tab="mine">Mi lista <span class="pill-n" id="tabCount">0</span></button>
+      </div>
+    </div>
+
+    <!-- EXPLORAR -->
+    <div id="pExplore">
+      <div class="toolbar">
+        <input class="inp" id="qIn" type="search" placeholder="Buscar por nombre (3 letras o más)" aria-label="Buscar anime" autocomplete="off" enterkeyhint="search">
+        <select class="sel" id="typeSel" aria-label="Tipo">
+          <option value="">Todos los tipos</option>
+          <option value="tv">Serie TV</option>
+          <option value="movie">Película</option>
+          <option value="ova">OVA</option>
+          <option value="ona">ONA</option>
+          <option value="special">Especial</option>
+        </select>
+        <select class="sel" id="orderSel" aria-label="Ordenar por">
+          <option value="pop">Más populares</option>
+          <option value="score">Mejor puntuados</option>
+          <option value="new">Más nuevos</option>
+          <option value="az">Orden A–Z</option>
+        </select>
+        <div class="vbtns" id="viewBtns" role="group" aria-label="Vista">
+          <button data-v="cards" aria-label="Vista con descripción" aria-pressed="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><path d="M14 6h7M14 9h5M14 16h7M14 19h5"/></svg></button>
+          <button data-v="list" aria-label="Vista compacta" aria-pressed="false"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+        </div>
+      </div>
+      <div class="lbar" id="exLetters" aria-label="Índice alfabético"></div>
+      <p class="hint">El índice usa el título original en romaji (por ejemplo, “Shingeki no Kyojin” está en la S). Para buscar por otro nombre, usá el buscador.</p>
+      <p class="count" id="exCount" aria-live="polite"></p>
+      <div class="grid" id="exGrid"></div>
+      <div id="exMsg"></div>
+      <div class="more"><button class="btn ghost" id="exMore" hidden>Cargar más</button></div>
+      <div id="exSentinel" style="height:1px"></div>
+    </div>
+
+    <!-- MI LISTA -->
+    <div id="pMine" hidden>
+      <div class="sumrow" id="myChips"></div>
+      <div class="sumrow">
+        <div class="prog" aria-hidden="true"><b id="myBar" style="width:0%"></b></div>
+        <span class="progtx" id="myProgTx"></span>
+      </div>
+      <div class="toolbar">
+        <input class="inp" id="myQ" type="search" placeholder="Buscar en mi lista" aria-label="Buscar en mi lista" autocomplete="off">
+        <button class="btn ghost sm" id="expBtn">Exportar copia (JSON)</button>
+        <label class="btn ghost sm" for="impFile" style="cursor:pointer">Importar copia</label>
+        <input type="file" id="impFile" accept="application/json,.json" hidden>
+      </div>
+      <div class="lbar" id="myLetters" aria-label="Índice alfabético de mi lista"></div>
+      <div id="myList"></div>
+    </div>
+  </div>
+</section>
+
+<section class="blk" style="padding-top:20px">
+  <div class="wrap">
+    <div class="sec-h">
+      <h2>Personajes que marcaron época</h2>
+      <p>Los más queridos por la comunidad. En cada ficha de anime vas a ver a su elenco principal con foto.</p>
+    </div>
+    <div class="chr-row" id="topChars"><p class="muted">Cargando personajes…</p></div>
+  </div>
+</section>
+
+<section class="blk" id="como" style="padding-top:20px">
+  <div class="wrap">
+    <div class="sec-h">
+      <h2>Cómo funciona</h2>
+      <p>Tres pasos y tenés tu lista armada.</p>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="vis" id="vis1" aria-hidden="true"></div>
+        <span class="n">Paso 1</span>
+        <h3>Elegí una letra</h3>
+        <p>El índice alfabético te lleva directo a los títulos. Los más populares aparecen primero.</p>
+      </div>
+      <div class="step">
+        <div class="vis" id="vis2" aria-hidden="true"></div>
+        <span class="n">Paso 2</span>
+        <h3>Abrí la ficha</h3>
+        <p>Descripción, puntaje, géneros y las fotos de los personajes principales.</p>
+      </div>
+      <div class="step">
+        <div class="vis" id="vis3" aria-hidden="true"></div>
+        <span class="n">Paso 3</span>
+        <h3>Marcá tu progreso</h3>
+        <p>Viendo, visto, pendiente o abandonado. Si estás viendo uno, llevá la cuenta de episodios.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="blk" id="faq" style="padding-top:20px">
+  <div class="wrap">
+    <div class="sec-h"><h2>Preguntas frecuentes</h2></div>
+    <div class="faq">
+      <details><summary>¿De dónde salen los anime y las imágenes?</summary><p>De MyAnimeList, a través de la API gratuita Jikan. No hace falta cuenta ni clave, y el catálogo se actualiza solo.</p></details>
+      <details><summary>¿Dónde se guardan mis marcas?</summary><p>En este dispositivo, dentro del navegador. Para pasarlas a otro dispositivo o hacer una copia de seguridad, usá “Exportar copia” en Mi lista e “Importar copia” en el otro.</p></details>
+      <details><summary>¿Por qué el índice usa nombres en japonés?</summary><p>Las letras se arman con el título original en romaji. Si buscás “Attack on Titan”, usá el buscador: encuentra también los nombres en inglés.</p></details>
+      <details><summary>¿Las descripciones están en español?</summary><p>Vienen en inglés. En cada ficha hay un botón para traducirlas al español; usa un servicio gratuito con límite diario, así que puede fallar si se agotó.</p></details>
+      <details><summary>¿Cómo la instalo en el celular?</summary><p>Desde Chrome en Android, tocá el botón “Instalar app” o el menú ⋮ y elegí “Instalar app” / “Agregar a la pantalla principal”.</p></details>
+      <details><summary>Dice que no pudo cargar. ¿Qué hago?</summary><p>Jikan limita la cantidad de pedidos por minuto. Esperá unos segundos y tocá “Reintentar”. Tu lista guardada se ve igual aunque no haya conexión.</p></details>
+    </div>
+  </div>
+</section>
+
+<section class="cta-sec">
+  <div class="wrap">
+    <h2>Armá tu lista de la A a la Z</h2>
+    <p>Empezá por la letra que quieras. No hace falta crear cuenta.</p>
+    <a class="btn pri" href="#app" data-tab="explore">Empezar ahora</a>
+  </div>
+</section>
+</main>
+
+<footer class="ftr">
+  <div class="wrap">
+    <span>Animeteca · proyecto personal, sin afiliación con MyAnimeList.</span>
+    <span>Datos e imágenes: MyAnimeList vía Jikan API.</span>
+  </div>
+</footer>
+
+<!-- Ficha -->
+<dialog class="modal" id="modal" aria-label="Ficha del anime"><div class="mwrap" id="mBody"></div></dialog>
+
+<!-- Selector de estado -->
+<dialog class="sheet" id="sheet" aria-labelledby="shTitle">
+  <div class="shin">
+    <p class="sh-t" id="shTitle"></p>
+    <div id="shOpts"></div>
+    <button class="sh-x" id="shClose">Cancelar</button>
+  </div>
+</dialog>
+
+<div id="toast" class="toast" popover="manual" role="status"></div>
+
+<script>
+(() => {
+'use strict';
+
+/* ================= Utilidades ================= */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const nf = new Intl.NumberFormat('es-AR');
+const collator = new Intl.Collator('es', { sensitivity: 'base', numeric: true });
+const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+const norm = s => (s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+const letterOf = t => {
+  const c = (t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().charAt(0).toUpperCase();
+  return /[A-Z]/.test(c) ? c : '#';
+};
+const debounce = (fn, ms) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; };
+
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch { return false; } }
+};
+const LS = { lib: 'animeteca.lib.v1', prefs: 'animeteca.prefs.v1', cache: 'animeteca.cache.v1', tr: 'animeteca.tr.v1' };
+
+const STATUS = {
+  watching: { label: 'Viendo',     icon: '▶', color: '#3cd3ff' },
+  done:     { label: 'Visto',      icon: '✓', color: '#3ddc97' },
+  plan:     { label: 'Pendiente',  icon: '+', color: '#9a86ff' },
+  drop:     { label: 'Abandonado', icon: '✕', color: '#ff5d73' }
+};
+const TYPE_ES = { TV: 'Serie TV', Movie: 'Película', OVA: 'OVA', ONA: 'ONA', Special: 'Especial', 'TV Special': 'Especial TV', Music: 'Música' };
+const AIR_ES = { 'Finished Airing': 'Finalizado', 'Currently Airing': 'En emisión', 'Not yet aired': 'Próximamente' };
+
+/* ================= Estado persistente ================= */
+let lib = store.get(LS.lib, {});
+const prefs = Object.assign({ view: 'cards', order: 'pop', letter: 'A', type: '' }, store.get(LS.prefs, {}));
+const savePrefs = () => store.set(LS.prefs, prefs);
+const animeCache = new Map();
+let tab = 'explore';
+
+/* ================= Cliente Jikan (cola con ritmo) ================= */
+const API = 'https://api.jikan.moe/v4';
+const memo = new Map();
+const queue = [];
+let busy = false, lastAt = 0;
+
+function jikan(path, params = {}, prio = false) {
+  const qs = new URLSearchParams(params).toString();
+  const url = API + path + (qs ? '?' + qs : '');
+  if (memo.has(url)) return memo.get(url);
+  const p = new Promise((res, rej) => {
+    const job = { url, res, rej, tries: 0 };
+    prio ? queue.unshift(job) : queue.push(job);
+    pump();
+  });
+  memo.set(url, p);
+  p.catch(() => memo.delete(url));
+  return p;
+}
+async function pump() {
+  if (busy) return;
+  busy = true;
+  while (queue.length) {
+    const job = queue.shift();
+    const wait = Math.max(0, lastAt + 420 - Date.now());
+    if (wait) await sleep(wait);
+    lastAt = Date.now();
+    try {
+      const r = await fetch(job.url, { headers: { Accept: 'application/json' } });
+      if (r.status === 429 || r.status >= 500) {
+        if (job.tries++ < 3) { queue.unshift(job); await sleep(1500 * job.tries); continue; }
+        throw new Error('HTTP ' + r.status);
+      }
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      job.res(await r.json());
+    } catch (e) {
+      if (e.name === 'TypeError' && job.tries++ < 2) { queue.unshift(job); await sleep(1200); continue; }
+      job.rej(e);
+    }
+  }
+  busy = false;
+}
+async function cachedList(key, ttl, fetcher) {
+  const e = store.get(LS.cache, {})[key];
+  if (e && Date.now() - e.t < ttl) return e.d;
+  try {
+    const d = await fetcher();
+    const c = store.get(LS.cache, {}); c[key] = { t: Date.now(), d }; store.set(LS.cache, c);
+    return d;
+  } catch (err) { if (e) return e.d; throw err; }
+}
+
+/* ================= Modelo ================= */
+const imgOf = a => a?.images?.webp?.large_image_url || a?.images?.jpg?.large_image_url || a?.images?.jpg?.image_url || '';
+const toItem = a => ({
+  id: a.mal_id,
+  t: a.title || a.title_english || '',
+  en: (a.title_english && a.title_english !== a.title) ? a.title_english : '',
+  img: imgOf(a),
+  y: a.year || a.aired?.prop?.from?.year || null,
+  type: a.type || '',
+  eps: a.episodes || null,
+  score: a.score || null
+});
+const minimal = a => ({
+  mal_id: a.mal_id, title: a.title, title_english: a.title_english, images: { webp: { large_image_url: a.images?.webp?.large_image_url }, jpg: { large_image_url: a.images?.jpg?.large_image_url, image_url: a.images?.jpg?.image_url } },
+  type: a.type, score: a.score, year: a.year, episodes: a.episodes, _min: true
+});
+const cleanSyn = s => (s || '').replace(/\[Written by MAL Rewrite\]/gi, '').replace(/\(Source:[^)]*\)/gi, '').replace(/[ \t]+/g, ' ').replace(/\n{3,}/g, '\n\n').trim();
+const shortSyn = s => { const t = cleanSyn(s).replace(/\s+/g, ' '); return t.length > 200 ? t.slice(0, 200).replace(/\s+\S*$/, '') + '…' : t; };
+const fixName = n => n && n.includes(',') ? n.split(',').map(x => x.trim()).reverse().join(' ') : (n || '');
+
+function saveLib() { store.set(LS.lib, lib); updateCounts(); }
+function setStatus(a, st) {
+  const base = a.mal_id ? toItem(a) : a;
+  const id = base.id;
+  if (!st) delete lib[id];
+  else {
+    const cur = lib[id];
+    lib[id] = { ...(cur || {}), ...base, st, ep: cur?.ep ?? 0, ts: Date.now() };
+    if (st === 'done' && lib[id].eps) lib[id].ep = lib[id].eps;
+  }
+  saveLib();
+  refreshStatusUI(id);
+}
+function applyStatus(id, st) {
+  const src = animeCache.get(id) || lib[id];
+  if (!src) return;
+  setStatus(src, st);
+  toast(st ? `Marcado como “${STATUS[st].label}”` : 'Quitado de tu lista');
+}
+function bumpEp(id, d) {
+  const it = lib[id]; if (!it) return;
+  let ep = Math.max(0, (it.ep || 0) + d);
+  if (it.eps && ep >= it.eps) { ep = it.eps; it.st = 'done'; toast('¡Terminaste! Pasó a “Visto”'); }
+  it.ep = ep; it.ts = Date.now();
+  saveLib();
+  refreshStatusUI(id);
+}
+
+/* ================= Render de tarjetas ================= */
+const stBtn = id => {
+  const s = lib[id]?.st, m = STATUS[s];
+  return `<button class="stbtn" data-st="${s || ''}" data-id="${id}" aria-label="Cambiar estado">${m ? `${m.icon} ${m.label}` : '+ Marcar'}</button>`;
+};
+const epBox = id => {
+  const it = lib[id];
+  if (it?.st !== 'watching') return '';
+  return `<span class="epbox" data-epbox="${id}">Ep. <b class="epv">${it.ep || 0}${it.eps ? ' / ' + it.eps : ''}</b> <button data-epinc="${id}" aria-label="Sumar un episodio">+1</button></span>`;
+};
+function cardHTML(it, syn) {
+  const meta = [
+    it.type ? `<span>${esc(TYPE_ES[it.type] || it.type)}</span>` : '',
+    it.y ? `<span>${it.y}</span>` : '',
+    it.eps ? `<span>${it.eps} ep.</span>` : '',
+    it.score ? `<span class="sc">★ ${Number(it.score).toFixed(1)}</span>` : ''
+  ].join('');
+  const st = lib[it.id]?.st || '';
+  return `<article class="card" data-id="${it.id}" data-st="${st}">
+    <div class="poster">${it.img ? `<img loading="lazy" decoding="async" referrerpolicy="no-referrer" src="${esc(it.img)}" alt="">` : ''}</div>
+    <div class="cbody">
+      <h3><button class="open" data-open="${it.id}">${esc(it.t)}</button></h3>
+      ${it.en ? `<p class="alt">${esc(it.en)}</p>` : ''}
+      <div class="meta">${meta}</div>
+      ${syn ? `<p class="syn">${esc(syn)}</p>` : ''}
+    </div>
+    <div class="cfoot">${stBtn(it.id)}${epBox(it.id)}</div>
+  </article>`;
+}
+const gridClass = () => 'grid' + (prefs.view === 'list' ? ' list' : '');
+
+function refreshStatusUI(id) {
+  const s = lib[id]?.st || '';
+  $$(`.card[data-id="${id}"]`).forEach(c => {
+    c.dataset.st = s;
+    const b = $('.stbtn', c);
+    if (b) { b.dataset.st = s; b.textContent = s ? `${STATUS[s].icon} ${STATUS[s].label}` : '+ Marcar'; }
+    const f = $('.cfoot', c);
+    if (f) { $$('.epbox', f).forEach(x => x.remove()); if (s === 'watching') f.insertAdjacentHTML('beforeend', epBox(id)); }
+  });
+  if (tab === 'mine') { renderMineChrome(); if (my.f !== 'all' || !lib[id]) renderMineList(); }
+  if (modal.open && curId === id) renderControls();
+  if (sheet.open && sheetId === id) renderSheet();
+}
+function updateCounts() {
+  const all = Object.values(lib);
+  $('#navCount').textContent = all.length;
+  $('#tabCount').textContent = all.length;
+  const byL = {};
+  all.forEach(i => { const l = letterOf(i.t); byL[l] = (byL[l] || 0) + 1; });
+  $$('#exLetters .lbtn').forEach(b => { const n = byL[b.dataset.l]; n ? b.dataset.n = n : b.removeAttribute('data-n'); });
+}
+
+/* ================= Toast ================= */
+const toastEl = $('#toast'); let tt;
+function toast(msg) {
+  toastEl.textContent = msg;
+  try { if (!toastEl.matches(':popover-open')) toastEl.showPopover(); } catch {}
+  clearTimeout(tt);
+  tt = setTimeout(() => { try { toastEl.hidePopover(); } catch {} }, 2300);
+}
+
+/* ================= Explorar ================= */
+const ORDERS = {
+  pop:   { order_by: 'members', sort: 'desc' },
+  score: { order_by: 'score', sort: 'desc', min_score: '1' },
+  new:   { order_by: 'start_date', sort: 'desc' },
+  az:    { order_by: 'title', sort: 'asc' }
+};
+const ex = { letter: prefs.letter, q: '', type: prefs.type, order: prefs.order, page: 0, next: true, total: null, shown: 0, seen: new Set(), loading: false, gen: 0, error: false };
+const exGrid = $('#exGrid'), exMsg = $('#exMsg'), exMore = $('#exMore'), exCount = $('#exCount');
+
+function buildLetterBar(el, withAll, withHash) {
+  const list = [...(withAll ? [''] : []), ...LETTERS, ...(withHash ? ['#'] : [])];
+  el.innerHTML = list.map(l => `<button class="lbtn" data-l="${l}">${l || 'Todos'}</button>`).join('');
+}
+function markActiveLetter(el, letter) {
+  $$('.lbtn', el).forEach(b => b.classList.toggle('act', b.dataset.l === letter));
+  const a = $('.lbtn.act', el);
+  // centrar la letra activa solo dentro de la barra (sin mover la página)
+  if (a) el.scrollTo({ left: a.offsetLeft - (el.clientWidth - a.offsetWidth) / 2, behavior: 'auto' });
+}
+function updateCount() {
+  if (ex.error) { exCount.textContent = ''; return; }
+  if (ex.total == null) { exCount.textContent = ''; return; }
+  const what = ex.q ? `“${ex.q}”` : (ex.letter ? `la letra ${ex.letter}` : 'todo el catálogo');
+  exCount.textContent = `${nf.format(ex.total)} títulos para ${what}, mostrando ${nf.format(ex.shown)}`;
+}
+function skeletons() {
+  exGrid.insertAdjacentHTML('beforeend', Array.from({ length: 6 }, () => '<div class="sk ph"></div>').join(''));
+}
+async function loadMore(reset) {
+  if (reset) {
+    ex.gen++; ex.loading = false; ex.page = 0; ex.next = true; ex.total = null; ex.shown = 0; ex.error = false; ex.seen.clear();
+    exGrid.className = gridClass(); exGrid.innerHTML = ''; exMsg.innerHTML = ''; exMore.hidden = true; updateCount();
+  }
+  if (ex.loading || !ex.next) return;
+  ex.loading = true; ex.error = false; exMsg.innerHTML = ''; exMore.hidden = true;
+  const gen = ex.gen;
+  skeletons();
+  try {
+    const params = { page: ex.page + 1, limit: 24, sfw: 'true', ...ORDERS[ex.order] };
+    if (ex.q) params.q = ex.q; else if (ex.letter) params.letter = ex.letter;
+    if (ex.type) params.type = ex.type;
+    const r = await jikan('/anime', params, true);
+    if (gen !== ex.gen) return;
+    $$('.sk', exGrid).forEach(n => n.remove());
+    ex.page++;
+    ex.next = !!r.pagination?.has_next_page;
+    ex.total = r.pagination?.items?.total ?? ex.total;
+    const fresh = (r.data || []).filter(a => !ex.seen.has(a.mal_id));
+    fresh.forEach(a => { ex.seen.add(a.mal_id); animeCache.set(a.mal_id, a); });
+    ex.shown += fresh.length;
+    exGrid.insertAdjacentHTML('beforeend', fresh.map(a => cardHTML(toItem(a), shortSyn(a.synopsis))).join(''));
+    if (!ex.shown) exMsg.innerHTML = '<div class="msg">No hay resultados con estos filtros. Probá con otra letra o cambiá el tipo.</div>';
+    exMore.hidden = !ex.next;
+    updateCount();
+  } catch (e) {
+    if (gen !== ex.gen) return;
+    $$('.sk', exGrid).forEach(n => n.remove());
+    ex.error = true;
+    exMsg.innerHTML = `<div class="msg">No pude cargar los títulos. Puede ser tu conexión o el límite de pedidos de la API.<br><button class="btn pri sm" id="exRetry">Reintentar</button></div>`;
+  } finally {
+    if (gen === ex.gen) { ex.loading = false; if (!ex.error) fillViewport(); }
+  }
+}
+function fillViewport() {
+  if (tab !== 'explore' || !ex.next || ex.loading || ex.error) return;
+  const r = $('#exSentinel').getBoundingClientRect();
+  if (r.top < innerHeight + 600) loadMore();
+}
+new IntersectionObserver(es => { if (es[0].isIntersecting && tab === 'explore') loadMore(); }, { rootMargin: '700px' }).observe($('#exSentinel'));
+
+function resetExplorer() { markActiveLetter($('#exLetters'), ex.q ? null : ex.letter); loadMore(true); }
+
+$('#exLetters').addEventListener('click', e => {
+  const b = e.target.closest('.lbtn'); if (!b) return;
+  ex.letter = b.dataset.l; ex.q = ''; $('#qIn').value = '';
+  prefs.letter = ex.letter; savePrefs();
+  resetExplorer();
+  const top = $('#pExplore').getBoundingClientRect().top + scrollY - 70;
+  if (scrollY > top + 300) scrollTo({ top, behavior: 'smooth' });
+});
+const doSearch = () => {
+  const q = $('#qIn').value.trim();
+  if (q.length === 0) { if (ex.q) { ex.q = ''; resetExplorer(); } return; }
+  if (q.length < 3) return;
+  if (q === ex.q) return;
+  ex.q = q; resetExplorer();
+};
+$('#qIn').addEventListener('input', debounce(doSearch, 500));
+$('#qIn').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); doSearch(); e.target.blur(); } });
+$('#typeSel').addEventListener('change', e => { ex.type = e.target.value; prefs.type = ex.type; savePrefs(); resetExplorer(); });
+$('#orderSel').addEventListener('change', e => { ex.order = e.target.value; prefs.order = ex.order; savePrefs(); resetExplorer(); });
+exMore.addEventListener('click', () => loadMore());
+exMsg.addEventListener('click', e => { if (e.target.id === 'exRetry') loadMore(); });
+
+function applyView() {
+  $$('#viewBtns button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === prefs.view)));
+  $$('.grid').forEach(g => g.classList.toggle('list', prefs.view === 'list'));
+}
+$('#viewBtns').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  prefs.view = b.dataset.v; savePrefs(); applyView();
+});
+
+/* ================= Mi lista ================= */
+const my = { f: 'all', letter: '', q: '' };
+function renderMineChrome() {
+  const all = Object.values(lib);
+  const counts = { all: all.length, watching: 0, done: 0, plan: 0, drop: 0 };
+  all.forEach(i => counts[i.st]++);
+  $('#myChips').innerHTML = [['all', 'Todos'], ...Object.entries(STATUS).map(([k, v]) => [k, v.label])]
+    .map(([k, l]) => `<button class="chip ${my.f === k ? 'act' : ''}" data-f="${k}">${l} <i>${counts[k]}</i></button>`).join('');
+  const pct = all.length ? Math.round(counts.done / all.length * 100) : 0;
+  $('#myBar').style.width = pct + '%';
+  $('#myProgTx').textContent = all.length ? `${counts.done} ${counts.done === 1 ? 'visto' : 'vistos'} de ${all.length} en tu lista (${pct}%)` : 'Tu lista está vacía';
+  const byL = {};
+  all.forEach(i => { const l = letterOf(i.t); byL[l] = (byL[l] || 0) + 1; });
+  const bar = $('#myLetters');
+  if (!bar.children.length) buildLetterBar(bar, true, true);
+  $$('.lbtn', bar).forEach(b => {
+    const l = b.dataset.l, n = byL[l];
+    b.classList.toggle('act', my.letter === l);
+    n ? b.dataset.n = n : b.removeAttribute('data-n');
+    (l && !n) ? b.setAttribute('data-empty', '') : b.removeAttribute('data-empty');
+  });
+}
+function renderMineList() {
+  const all = Object.values(lib);
+  const box = $('#myList');
+  if (!all.length) {
+    box.innerHTML = '<div class="msg">Todavía no marcaste ningún anime. Elegí una letra y empezá.<br><button class="btn pri sm" data-tab="explore">Ir al índice</button></div>';
+    return;
+  }
+  const q = norm(my.q);
+  const items = all.filter(i => (my.f === 'all' || i.st === my.f) && (!my.letter || letterOf(i.t) === my.letter) && (!q || norm(i.t + ' ' + i.en).includes(q)))
+    .sort((a, b) => collator.compare(a.t, b.t));
+  if (!items.length) { box.innerHTML = '<div class="msg">Nada coincide con ese filtro.</div>'; return; }
+  const groups = {};
+  items.forEach(i => (groups[letterOf(i.t)] ||= []).push(i));
+  box.innerHTML = Object.keys(groups).sort((a, b) => a === '#' ? 1 : b === '#' ? -1 : a.localeCompare(b)).map(l =>
+    `<section class="grp"><h3 class="gh"><span class="gl">${l}</span><i>${groups[l].length}</i></h3><div class="${gridClass()}">${groups[l].map(i => cardHTML(i, '')).join('')}</div></section>`
+  ).join('');
+}
+function renderMine() { renderMineChrome(); renderMineList(); }
+
+$('#myChips').addEventListener('click', e => { const b = e.target.closest('[data-f]'); if (!b) return; my.f = b.dataset.f; renderMine(); });
+$('#myLetters').addEventListener('click', e => { const b = e.target.closest('.lbtn'); if (!b) return; my.letter = (my.letter === b.dataset.l) ? '' : b.dataset.l; renderMine(); });
+$('#myQ').addEventListener('input', debounce(e => { my.q = e.target.value; renderMineList(); }, 150));
+
+$('#expBtn').addEventListener('click', () => {
+  if (!Object.keys(lib).length) return toast('No hay nada para exportar todavía');
+  const blob = new Blob([JSON.stringify({ app: 'animeteca', v: 1, exported: new Date().toISOString(), items: lib }, null, 1)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `animeteca-lista-${new Date().toISOString().slice(0, 10)}.json`;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  toast('Copia exportada');
+});
+$('#impFile').addEventListener('change', async e => {
+  const f = e.target.files[0]; e.target.value = '';
+  if (!f) return;
+  try {
+    const j = JSON.parse(await f.text());
+    const src = Array.isArray(j) ? j : Object.values(j.items || {});
+    let n = 0;
+    src.forEach(i => {
+      if (!i || !i.id || !STATUS[i.st]) return;
+      const cur = lib[i.id];
+      if (!cur || (i.ts || 0) > (cur.ts || 0)) { lib[i.id] = { id: +i.id, t: String(i.t || ''), en: String(i.en || ''), img: String(i.img || ''), y: i.y || null, type: i.type || '', eps: i.eps || null, score: i.score || null, st: i.st, ep: +i.ep || 0, ts: i.ts || Date.now() }; n++; }
+    });
+    saveLib(); renderMine();
+    toast(n ? `Se importaron ${n} títulos` : 'No había nada nuevo para importar');
+  } catch { toast('El archivo no es una copia válida'); }
+});
+
+/* ================= Pestañas ================= */
+function setTab(t) {
+  tab = t;
+  $('#pExplore').hidden = t !== 'explore';
+  $('#pMine').hidden = t !== 'mine';
+  $('#tabExplore').setAttribute('aria-selected', String(t === 'explore'));
+  $('#tabMine').setAttribute('aria-selected', String(t === 'mine'));
+  if (t === 'mine') renderMine(); else fillViewport();
+}
+
+/* ================= Ficha (modal) ================= */
+const modal = $('#modal'), mBody = $('#mBody');
+let curId = null;
+
+async function openModal(id) {
+  if (modal.open) return;
+  curId = id;
+  let a = animeCache.get(id);
+  const it = lib[id];
+  history.pushState({ m: id }, '');
+  document.body.classList.add('lock');
+  modal.showModal();
+  renderModal(a, it);
+  if (!a || a._min) {
+    try {
+      const r = await jikan('/anime/' + id, {}, true);
+      a = r.data; animeCache.set(id, a);
+      if (curId === id) renderModal(a, lib[id]);
+    } catch { if (curId === id && $('#mSyn')) $('#mSyn').textContent = 'No se pudo cargar la descripción. Cerrá la ficha y probá de nuevo en unos segundos.'; }
+  }
+  if (curId === id) loadCharacters(id);
+}
+function renderModal(a, it) {
+  const base = a ? toItem(a) : it;
+  if (!base) return;
+  const tags = [];
+  if (base.type) tags.push(TYPE_ES[base.type] || base.type);
+  if (base.eps) tags.push(base.eps + ' episodios');
+  if (base.y) tags.push(String(base.y));
+  if (a?.status) tags.push(AIR_ES[a.status] || a.status);
+  if (a?.studios?.length) tags.push(a.studios[0].name);
+  const genres = a ? [...(a.genres || []), ...(a.themes || []), ...(a.demographics || [])].map(g => g.name) : [];
+  mBody.innerHTML = `
+    <button class="mclose" id="mClose" aria-label="Cerrar">✕</button>
+    <div class="mhead">
+      <div class="mposter">${base.img ? `<img src="${esc(base.img)}" alt="Póster de ${esc(base.t)}" referrerpolicy="no-referrer">` : ''}</div>
+      <div class="minfo">
+        <h2>${esc(base.t)}</h2>
+        ${(base.en || a?.title_japanese) ? `<p class="jp">${esc([base.en, a?.title_japanese].filter(Boolean).join(' / '))}</p>` : ''}
+        <div class="chips">${base.score ? `<span class="tag sc">★ ${Number(base.score).toFixed(2)}</span>` : ''}${tags.map(t => `<span class="tag">${esc(t)}</span>`).join('')}</div>
+        <div class="mstat" id="mStat"></div>
+        <div class="mprog" id="mProg" hidden></div>
+      </div>
+    </div>
+    <div class="msec">
+      <h4>Descripción</h4>
+      <p class="msyn" id="mSyn"></p>
+      <button class="linkbtn" id="trBtn" hidden>Traducir al español</button>
+    </div>
+    ${genres.length ? `<div class="msec"><h4>Géneros y temas</h4><div class="chips" style="margin:0">${genres.map(g => `<span class="tag">${esc(g)}</span>`).join('')}</div></div>` : ''}
+    <div class="msec"><h4>Personajes</h4><div class="chars" id="mChars">${Array.from({ length: 6 }, () => '<div class="char"><div class="im ph"></div></div>').join('')}</div></div>
+    <div class="mlinks">
+      ${a?.trailer?.url ? `<a class="btn ghost sm" href="${esc(a.trailer.url)}" target="_blank" rel="noopener">Ver tráiler</a>` : ''}
+      ${a?.url ? `<a class="btn ghost sm" href="${esc(a.url)}" target="_blank" rel="noopener">Ver en MyAnimeList</a>` : ''}
+    </div>`;
+  const syn = a ? cleanSyn(a.synopsis) : '';
+  $('#mSyn').textContent = (a && !a._min) ? (syn || 'Este anime todavía no tiene descripción.') : 'Cargando descripción…';
+  const trBtn = $('#trBtn');
+  if (syn) {
+    trBtn.hidden = false;
+    const cached = store.get(LS.tr, {})[curId];
+    let showing = 'en';
+    const set = (lang, text) => { $('#mSyn').textContent = text; showing = lang; trBtn.textContent = lang === 'es' ? 'Ver original en inglés' : 'Traducir al español'; };
+    trBtn.onclick = async () => {
+      if (showing === 'es') return set('en', syn);
+      trBtn.disabled = true; trBtn.textContent = 'Traduciendo…';
+      try { set('es', await translate(curId, syn)); }
+      catch { trBtn.textContent = 'Traducir al español'; toast('No se pudo traducir ahora. Probá más tarde.'); }
+      trBtn.disabled = false;
+    };
+    if (cached) set('es', cached);
+  }
+  renderControls();
+  mBody.scrollTop = 0;
+}
+function renderControls() {
+  if (curId == null) return;
+  const cur = lib[curId];
+  const st = $('#mStat'); if (!st) return;
+  st.innerHTML = Object.entries(STATUS).map(([k, v]) => `<button class="chip stc ${cur?.st === k ? 'act' : ''}" data-mset="${k}" style="--c:${v.color}">${v.icon} ${v.label}</button>`).join('');
+  const p = $('#mProg');
+  if (cur?.st === 'watching') {
+    const eps = cur.eps || animeCache.get(curId)?.episodes;
+    p.hidden = false;
+    p.innerHTML = `<span>Episodio</span><button data-epm aria-label="Restar un episodio">−</button><b>${cur.ep || 0}${eps ? ' / ' + eps : ''}</b><button data-epp aria-label="Sumar un episodio">+</button>`;
+  } else p.hidden = true;
+}
+mBody.addEventListener('click', e => {
+  if (e.target.closest('#mClose')) return modal.close();
+  const s = e.target.closest('[data-mset]');
+  if (s) { const k = s.dataset.mset; applyStatus(curId, lib[curId]?.st === k ? null : k); return; }
+  if (e.target.closest('[data-epm]')) return bumpEp(curId, -1);
+  if (e.target.closest('[data-epp]')) return bumpEp(curId, 1);
+  if (e.target.closest('[data-retry]')) return loadCharacters(curId);
+});
+modal.addEventListener('click', e => { if (e.target === modal) modal.close(); });
+modal.addEventListener('close', () => {
+  curId = null; document.body.classList.remove('lock');
+  if (history.state && history.state.m) history.back();
+});
+window.addEventListener('popstate', () => { if (modal.open) modal.close(); });
+
+async function loadCharacters(id) {
+  const box = $('#mChars'); if (!box) return;
+  try {
+    const r = await jikan(`/anime/${id}/characters`, {}, true);
+    if (curId !== id) return;
+    const list = (r.data || [])
+      .filter(c => { const u = c.character?.images?.jpg?.image_url; return u && !/questionmark/.test(u); })
+      .sort((x, y) => (x.role === 'Main' ? 0 : 1) - (y.role === 'Main' ? 0 : 1) || (y.favorites || 0) - (x.favorites || 0))
+      .slice(0, 18);
+    box.innerHTML = list.length
+      ? list.map(c => `<figure class="char" style="margin:0"><div class="im"><img loading="lazy" referrerpolicy="no-referrer" src="${esc(c.character.images.jpg.image_url)}" alt=""></div><b>${esc(fixName(c.character.name))}</b><span>${c.role === 'Main' ? 'Principal' : 'Secundario'}</span></figure>`).join('')
+      : '<p class="muted" style="grid-column:1/-1">Este anime no tiene personajes cargados todavía.</p>';
+  } catch {
+    if (curId === id) box.innerHTML = '<p class="muted" style="grid-column:1/-1">No se pudieron cargar los personajes. <button class="linkbtn" data-retry>Reintentar</button></p>';
+  }
+}
+
+/* Traducción (MyMemory, gratuita, con límite diario) */
+const decode = s => { const t = document.createElement('textarea'); t.innerHTML = s; return t.value; };
+function chunkText(text, max = 450) {
+  const parts = text.split(/(?<=[.!?])\s+/), out = []; let cur = '';
+  for (const p0 of parts) {
+    let p = p0;
+    while (p.length > max) { if (cur) { out.push(cur); cur = ''; } out.push(p.slice(0, max)); p = p.slice(max); }
+    if ((cur + ' ' + p).trim().length > max) { out.push(cur); cur = p; } else cur = (cur + ' ' + p).trim();
+  }
+  if (cur) out.push(cur);
+  return out.filter(Boolean);
+}
+async function translate(id, text) {
+  const out = [];
+  for (const c of chunkText(text.replace(/\n+/g, ' ¶ '))) {
+    const r = await fetch('https://api.mymemory.translated.net/get?q=' + encodeURIComponent(c) + '&langpair=en|es');
+    if (!r.ok) throw new Error('tr');
+    const j = await r.json();
+    const t = j?.responseData?.translatedText || '';
+    if (Number(j.responseStatus) !== 200 || /MYMEMORY WARNING/i.test(t)) throw new Error('tr');
+    out.push(decode(t));
+  }
+  const res = out.join(' ').replace(/\s*¶\s*/g, '\n\n').trim();
+  const tr = store.get(LS.tr, {}); tr[id] = res;
+  const keys = Object.keys(tr); if (keys.length > 80) delete tr[keys[0]];
+  store.set(LS.tr, tr);
+  return res;
+}
+
+/* ================= Selector de estado ================= */
+const sheet = $('#sheet'); let sheetId = null;
+function openSheet(id) {
+  const src = lib[id] || (animeCache.get(id) && toItem(animeCache.get(id)));
+  if (!src) return;
+  sheetId = id; $('#shTitle').textContent = src.t;
+  renderSheet(); sheet.showModal();
+}
+function renderSheet() {
+  const cur = lib[sheetId]?.st;
+  $('#shOpts').innerHTML = Object.entries(STATUS).map(([k, v]) => `<button class="shopt ${cur === k ? 'act' : ''}" data-set="${k}"><span>${v.icon}</span>${v.label}</button>`).join('')
+    + (cur ? '<button class="shopt rm" data-set=""><span>✕</span>Quitar de mi lista</button>' : '');
+}
+sheet.addEventListener('click', e => {
+  if (e.target === sheet || e.target.id === 'shClose') return sheet.close();
+  const b = e.target.closest('[data-set]');
+  if (b) { applyStatus(sheetId, b.dataset.set || null); sheet.close(); }
+});
+
+/* ================= Clicks globales ================= */
+document.addEventListener('click', e => {
+  const tabBtn = e.target.closest('[data-tab]');
+  if (tabBtn) { setTab(tabBtn.dataset.tab); if (tabBtn.tagName !== 'A' && !tabBtn.classList.contains('tab')) $('#app').scrollIntoView(); return; }
+  const sb = e.target.closest('.stbtn'); if (sb) { e.stopPropagation(); return openSheet(+sb.dataset.id); }
+  const inc = e.target.closest('[data-epinc]'); if (inc) return bumpEp(+inc.dataset.epinc, 1);
+  const op = e.target.closest('[data-open]'); if (op) return openModal(+op.dataset.open);
+  const card = e.target.closest('.card'); if (card && !e.target.closest('a,button')) openModal(+card.dataset.id);
+});
+
+/* ================= Portada con datos reales ================= */
+async function loadShowcase() {
+  let tops = [], chars = [];
+  try {
+    tops = await cachedList('top-anime', 12 * 3600e3, async () => (await jikan('/top/anime', { limit: 25, sfw: 'true' })).data.filter(a => imgOf(a)).map(minimal));
+  } catch {}
+  if (tops.length) {
+    tops.forEach(a => { if (!animeCache.has(a.mal_id)) animeCache.set(a.mal_id, a); });
+    $('#fan').innerHTML = tops.slice(0, 5).map(a => `<button class="fc" data-open="${a.mal_id}" aria-label="${esc(a.title)}"><img src="${esc(imgOf(a))}" alt="" referrerpolicy="no-referrer"></button>`).join('');
+    const row = list => { const h = [...list, ...list].map(a => `<button class="mq" data-open="${a.mal_id}" title="${esc(a.title)}" aria-label="${esc(a.title)}"><img loading="lazy" src="${esc(imgOf(a))}" alt="" referrerpolicy="no-referrer"></button>`).join(''); return `<div class="mq-track">${h}</div><div class="mq-track" aria-hidden="true">${h}</div>`; };
+    $('#mq1').innerHTML = row(tops.slice(0, 13));
+    $('#mq2').innerHTML = row(tops.slice(12, 25));
+    $('#mqSec').hidden = false;
+    $('#vis1').innerHTML = ['A', 'B', 'C', 'D', 'S', 'T'].map(l => `<span class="lb ${l === 'S' ? 'on' : ''}">${l}</span>`).join('');
+    $('#vis3').innerHTML = Object.values(STATUS).map(s => `<span class="tag" style="color:${s.color};border-color:${s.color}55">${s.icon} ${s.label}</span>`).join('');
+  } else {
+    $('#fan').innerHTML = '';
+  }
+  try {
+    chars = await cachedList('top-chars', 12 * 3600e3, async () => (await jikan('/top/characters', { limit: 15 })).data.filter(c => c.images?.jpg?.image_url && !/questionmark/.test(c.images.jpg.image_url)).map(c => ({ id: c.mal_id, name: c.name, img: c.images.jpg.image_url, fav: c.favorites })));
+  } catch {}
+  if (chars.length) {
+    $('#topChars').innerHTML = chars.map(c => `<figure class="chr" style="margin:0"><div class="im"><img loading="lazy" referrerpolicy="no-referrer" src="${esc(c.img)}" alt=""></div><b>${esc(fixName(c.name))}</b><span>♥ ${nf.format(c.fav || 0)}</span></figure>`).join('');
+    $('#vis2').innerHTML = chars.slice(0, 4).map(c => `<span class="av"><img src="${esc(c.img)}" alt="" referrerpolicy="no-referrer"></span>`).join('');
+  } else {
+    $('#topChars').innerHTML = '<p class="muted">No se pudieron cargar los personajes ahora. Recargá en unos segundos.</p>';
+  }
+  try {
+    const total = await cachedList('total', 24 * 3600e3, async () => (await jikan('/anime', { limit: 1, sfw: 'true' })).pagination.items.total);
+    $('#heroCount').textContent = `${nf.format(total)} títulos en el catálogo`;
+  } catch { $('#heroCount').textContent = ''; }
+}
+
+/* ================= PWA ================= */
+let deferred = null;
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferred = e; $('#installBtn').hidden = false; });
+$('#installBtn').addEventListener('click', async () => {
+  if (!deferred) return; deferred.prompt(); await deferred.userChoice.catch(() => {}); deferred = null; $('#installBtn').hidden = true;
+});
+if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(() => {});
+
+/* ================= Arranque ================= */
+buildLetterBar($('#exLetters'), true, false);
+$('#typeSel').value = ex.type;
+$('#orderSel').value = ex.order;
+applyView();
+updateCounts();
+markActiveLetter($('#exLetters'), ex.letter);
+loadMore(true);
+loadShowcase();
+})();
+</script>
+</body>
+</html>
