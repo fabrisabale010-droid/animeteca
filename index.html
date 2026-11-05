@@ -69,6 +69,14 @@ a{color:inherit}
 .secin .tools{margin:12px 0 0}
 .askin{width:100%;text-align:center;font-size:1.3rem}
 
+dialog.sheet.wide{width:min(580px,100% - 24px)}
+.cfgta{width:100%;height:auto;min-height:150px;padding:12px;font:500 .85rem/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;resize:vertical;white-space:pre}
+pre.rules{margin:8px 0;padding:12px;border-radius:12px;background:var(--bg);border:1px solid var(--line);font:500 .78rem/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;overflow-x:auto;color:var(--soft)}
+.secin ol{margin:8px 0 8px 20px;display:grid;gap:6px}
+.secin code{background:var(--s2);padding:1px 6px;border-radius:6px;font-size:.84em}
+.secin .okline{color:var(--ok)}
+.secin .errline{color:var(--bad)}
+
 /* ---------- Hero ---------- */
 .hero{position:relative;padding:64px 0 36px;overflow:hidden;isolation:isolate}
 .hero::before{content:"";position:absolute;inset:-10% -10% auto;height:130%;z-index:-2;background:radial-gradient(620px 380px at 78% 32%,rgba(123,97,255,.38),transparent 70%),radial-gradient(520px 320px at 12% 8%,rgba(60,211,255,.16),transparent 70%)}
@@ -456,6 +464,10 @@ dialog.sheet{width:min(420px,100% - 24px);max-width:none;margin:auto;padding:0;b
           </div>
         </div>
       </details>
+      <details class="secbox" id="cloudBox">
+        <summary>Sincronización en la nube <span id="cloudState">Sin configurar</span></summary>
+        <div class="secin" id="cloudIn"></div>
+      </details>
       <div class="sumrow" id="myChips"></div>
       <div class="sumrow">
         <div class="prog" aria-hidden="true"><b id="myBar" style="width:0%"></b></div>
@@ -518,7 +530,8 @@ dialog.sheet{width:min(420px,100% - 24px);max-width:none;margin:auto;padding:0;b
     <div class="faq">
       <details><summary>¿De dónde salen los anime y las imágenes?</summary><p>De MyAnimeList, a través de las APIs gratuitas Tenrai y Jikan. No hace falta cuenta ni clave, y el catálogo se actualiza solo.</p></details>
       <details><summary>¿Cómo protejo mi lista con un PIN?</summary><p>En Mi lista abrí “Seguridad de tu lista” y creá un PIN de 4 a 6 números. Desde ese momento la lista se puede ver pero no modificar: marcar, quitar, sumar episodios o importar piden el PIN. Se vuelve a bloquear al abrir la app, tras 5 minutos sin usarla y al volver de estar un rato en segundo plano. Después de 5 intentos fallidos se bloquea unos minutos. Es una protección para que nadie toque tu lista desde tu dispositivo; no reemplaza una cuenta, así que hacé copias con “Exportar copia”.</p></details>
-      <details><summary>¿Dónde se guardan mis marcas?</summary><p>En este dispositivo, dentro del navegador. Para pasarlas a otro dispositivo o hacer una copia de seguridad, usá “Exportar copia” en Mi lista e “Importar copia” en el otro.</p></details>
+      <details><summary>¿Dónde se guardan mis marcas?</summary><p>Por defecto, en este dispositivo, dentro del navegador. Si borrás los datos del sitio, se pierden. Para evitarlo podés activar la sincronización en la nube (Mi lista → “Sincronización en la nube”), que la guarda en tu cuenta y la comparte entre tus dispositivos, o hacer copias con “Exportar copia” e “Importar copia”.</p></details>
+      <details><summary>¿Cómo sincronizo mi lista entre el celular y la compu?</summary><p>Con la sincronización en la nube: configurás tu proyecto de Firebase una sola vez (gratis), iniciás sesión con la misma cuenta en cada dispositivo y los cambios aparecen en todos. Funciona sin conexión: lo que marques se sube cuando vuelva internet. Si dos dispositivos cambian el mismo anime, gana el cambio más reciente.</p></details>
       <details><summary>¿Por qué el índice usa nombres en japonés?</summary><p>Las letras se arman con el título original en romaji. Si buscás “Attack on Titan”, usá el buscador: encuentra también los nombres en inglés.</p></details>
       <details><summary>¿Están todos los personajes?</summary><p>Cada ficha lista todos los personajes que MyAnimeList tiene cargados para ese anime, con buscador y filtro de principales. Además, en la pestaña Personajes podés recorrerlos a todos por letra o buscándolos por nombre. Si un personaje no tiene foto o descripción, es porque falta en la base de datos.</p></details>
       <details><summary>¿Las descripciones están en español?</summary><p>Vienen en inglés desde MyAnimeList y la app las traduce sola al español latino, usando Google Translate y MyMemory de respaldo. Las traducciones se guardan en tu dispositivo. Si el servicio falla, ves el original. Con el botón “Descripciones en español” podés apagar o prender la traducción, y en cada ficha podés ver el texto original.</p></details>
@@ -573,6 +586,46 @@ dialog.sheet{width:min(420px,100% - 24px);max-width:none;margin:auto;padding:0;b
   </div>
 </dialog>
 
+<!-- Nube: configuración, inicio de sesión y elecciones -->
+<dialog class="sheet wide" id="cfgDlg" aria-labelledby="cfgT">
+  <div class="shin">
+    <p class="sh-t" id="cfgT">Configurar Firebase</p>
+    <p class="muted" style="font-size:.9rem;margin-bottom:10px">Pegá acá el bloque <b>firebaseConfig</b> de tu proyecto (Configuración del proyecto → Tus apps → Web).</p>
+    <textarea class="inp cfgta" id="cfgIn" rows="8" spellcheck="false" autocapitalize="off" autocomplete="off" placeholder='const firebaseConfig = {&#10;  apiKey: "...",&#10;  authDomain: "...",&#10;  projectId: "...",&#10;  appId: "..."&#10;};'></textarea>
+    <p id="cfgE" style="color:var(--bad);font-size:.85rem;min-height:1.3em;margin-top:6px" role="alert"></p>
+    <div style="display:flex;gap:8px;margin-top:8px">
+      <button class="btn ghost" id="cfgNo" style="flex:1">Cancelar</button>
+      <button class="btn pri" id="cfgSave" style="flex:1">Guardar y conectar</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog class="sheet" id="authDlg" aria-labelledby="auT">
+  <div class="shin">
+    <p class="sh-t" id="auT">Iniciar sesión</p>
+    <input class="inp" id="auEmail" type="email" placeholder="Correo" autocomplete="email" autocapitalize="off" style="width:100%;margin-bottom:8px">
+    <input class="inp" id="auPass" type="password" placeholder="Contraseña (mínimo 6 caracteres)" autocomplete="current-password" style="width:100%">
+    <p id="auE" style="color:var(--bad);font-size:.85rem;min-height:1.3em;margin-top:6px" role="alert"></p>
+    <button class="btn pri" data-au="login" style="width:100%">Ingresar</button>
+    <div style="display:flex;gap:8px;margin-top:8px">
+      <button class="btn ghost" data-au="signup" style="flex:1">Crear cuenta</button>
+      <button class="btn ghost" data-au="google" style="flex:1">Google</button>
+    </div>
+    <div style="display:flex;justify-content:space-between;gap:10px;margin-top:12px">
+      <button class="linkbtn" data-au="reset" style="margin:0">Olvidé mi contraseña</button>
+      <button class="linkbtn" data-au="cancel" style="margin:0;color:var(--mut)">Cancelar</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog class="sheet" id="chooseDlg" aria-labelledby="chT">
+  <div class="shin">
+    <p class="sh-t" id="chT"></p>
+    <p class="muted" id="chM" style="font-size:.9rem;margin-bottom:12px"></p>
+    <div id="chOpts"></div>
+  </div>
+</dialog>
+
 <div id="toast" class="toast" popover="manual" role="status"></div>
 
 <script>
@@ -598,7 +651,7 @@ const store = {
   get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } },
   set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch { return false; } }
 };
-const LS = { lib: 'animeteca.lib.v1', prefs: 'animeteca.prefs.v1', cache: 'animeteca.cache.v1', tr: 'animeteca.tr.v1', trc: 'animeteca.trc.v1', trh: 'animeteca.trh.v1', sec: 'animeteca.sec.v1' };
+const LS = { lib: 'animeteca.lib.v1', prefs: 'animeteca.prefs.v1', cache: 'animeteca.cache.v1', tr: 'animeteca.tr.v1', trc: 'animeteca.trc.v1', trh: 'animeteca.trh.v1', sec: 'animeteca.sec.v1', fb: 'animeteca.fb.v1', cloud: 'animeteca.cloud.v1', tomb: 'animeteca.tomb.v1' };
 
 const STATUS = {
   watching: { label: 'Viendo',     icon: '▶', color: '#3cd3ff' },
@@ -611,6 +664,7 @@ const AIR_ES = { 'Finished Airing': 'Finalizado', 'Currently Airing': 'En emisi�
 
 /* ================= Estado persistente ================= */
 let lib = store.get(LS.lib, {});
+let tomb = store.get(LS.tomb, {});   // anime quitados: id -> momento (para sincronizar borrados)
 const prefs = Object.assign({ view: 'cards', order: 'pop', letter: 'A', type: '', es: true }, store.get(LS.prefs, {}));
 const savePrefs = () => store.set(LS.prefs, prefs);
 const animeCache = new Map();
@@ -696,17 +750,19 @@ const cleanSyn = s => (s || '').replace(/\[Written by MAL Rewrite\]/gi, '').repl
 const shortSyn = s => { const t = cleanSyn(s).replace(/\s+/g, ' '); return t.length > 200 ? t.slice(0, 200).replace(/\s+\S*$/, '') + '…' : t; };
 const fixName = n => n && n.includes(',') ? n.split(',').map(x => x.trim()).reverse().join(' ') : (n || '');
 
-function saveLib() { store.set(LS.lib, lib); updateCounts(); }
+function saveLib() { store.set(LS.lib, lib); store.set(LS.tomb, tomb); updateCounts(); }
 function setStatus(a, st) {
   const base = a.mal_id ? toItem(a) : a;
   const id = base.id;
-  if (!st) delete lib[id];
+  if (!st) { delete lib[id]; tomb[id] = Date.now(); }
   else {
     const cur = lib[id];
     lib[id] = { ...(cur || {}), ...base, st, ep: cur?.ep ?? 0, ts: Date.now() };
     if (st === 'done' && lib[id].eps) lib[id].ep = lib[id].eps;
+    delete tomb[id];
   }
   saveLib();
+  cloudDirty(id);
   refreshStatusUI(id);
 }
 async function applyStatus(id, st) {
@@ -724,6 +780,7 @@ async function bumpEp(id, d) {
   if (it.eps && ep >= it.eps) { ep = it.eps; it.st = 'done'; toast('¡Terminaste! Pasó a “Visto”'); }
   it.ep = ep; it.ts = Date.now();
   saveLib();
+  cloudDirty(id);
   refreshStatusUI(id);
 }
 
@@ -758,15 +815,22 @@ function cardHTML(it, syn) {
 }
 const gridClass = () => 'grid' + (prefs.view === 'list' ? ' list' : '');
 
+function paintCard(c) {
+  const id = +c.dataset.id, s = lib[id]?.st || '';
+  c.dataset.st = s;
+  const b = $('.stbtn', c);
+  if (b) { b.dataset.st = s; b.textContent = s ? `${STATUS[s].icon} ${STATUS[s].label}` : '+ Marcar'; }
+  const f = $('.cfoot', c);
+  if (f) { $$('.epbox', f).forEach(x => x.remove()); if (s === 'watching') f.insertAdjacentHTML('beforeend', epBox(id)); }
+}
+function refreshAllUI() {
+  $$('.card[data-id]').forEach(paintCard);
+  updateCounts();
+  if (tab === 'mine') renderMine();
+  if (modal.open && curId != null) renderControls();
+}
 function refreshStatusUI(id) {
-  const s = lib[id]?.st || '';
-  $$(`.card[data-id="${id}"]`).forEach(c => {
-    c.dataset.st = s;
-    const b = $('.stbtn', c);
-    if (b) { b.dataset.st = s; b.textContent = s ? `${STATUS[s].icon} ${STATUS[s].label}` : '+ Marcar'; }
-    const f = $('.cfoot', c);
-    if (f) { $$('.epbox', f).forEach(x => x.remove()); if (s === 'watching') f.insertAdjacentHTML('beforeend', epBox(id)); }
-  });
+  $$(`.card[data-id="${id}"]`).forEach(paintCard);
   if (tab === 'mine') { renderMineChrome(); if (my.f !== 'all' || !lib[id]) renderMineList(); }
   if (modal.open && curId === id) renderControls();
   if (sheet.open && sheetId === id) renderSheet();
@@ -955,7 +1019,7 @@ $('#impFile').addEventListener('change', async e => {
     src.forEach(i => {
       if (!i || !i.id || !STATUS[i.st]) return;
       const cur = lib[i.id];
-      if (!cur || (i.ts || 0) > (cur.ts || 0)) { lib[i.id] = { id: +i.id, t: String(i.t || ''), en: String(i.en || ''), img: String(i.img || ''), y: i.y || null, type: i.type || '', eps: i.eps || null, score: i.score || null, st: i.st, ep: +i.ep || 0, ts: i.ts || Date.now() }; n++; }
+      if ((!cur || (i.ts || 0) > (cur.ts || 0)) && (i.ts || Date.now()) > (tomb[i.id] || 0)) { delete tomb[i.id]; cloudDirty(+i.id); lib[i.id] = { id: +i.id, t: String(i.t || ''), en: String(i.en || ''), img: String(i.img || ''), y: i.y || null, type: i.type || '', eps: i.eps || null, score: i.score || null, st: i.st, ep: +i.ep || 0, ts: i.ts || Date.now() }; n++; }
     });
     saveLib(); renderMine();
     toast(n ? `Se importaron ${n} títulos` : 'No había nada nuevo para importar');
@@ -1490,10 +1554,10 @@ async function removePin() {
   sec = null; saveSec(); unlocked = false; clearTimeout(idleT); updateSecUI(); toast('PIN eliminado. Tu lista ya no está protegida.');
 }
 async function forgotPin() {
-  const t = await askInput({ title: 'Olvidé mi PIN', msg: 'Sin el PIN, la única salida es borrar el PIN y toda tu lista de este dispositivo. Después podés importar una copia exportada. Para confirmar, escribí BORRAR.', type: 'text', inputmode: 'text', maxlength: 10, invalid: 'Escribí BORRAR para confirmar.', validate: v => v.toUpperCase() === 'BORRAR', label: 'Borrar todo' });
+  const t = await askInput({ title: 'Olvidé mi PIN', msg: (cloud.user ? 'Se va a quitar el PIN y borrar la lista de este dispositivo. Tu copia en la nube no se toca y se vuelve a descargar sola. Para confirmar, escribí BORRAR.' : 'Sin el PIN, la única salida es borrar el PIN y toda tu lista de este dispositivo. Después podés importar una copia exportada. Para confirmar, escribí BORRAR.'), type: 'text', inputmode: 'text', maxlength: 10, invalid: 'Escribí BORRAR para confirmar.', validate: v => v.toUpperCase() === 'BORRAR', label: 'Borrar todo' });
   if (t === null) return;
-  lib = {}; saveLib(); sec = null; saveSec(); unlocked = false; clearTimeout(idleT);
-  updateSecUI(); renderMine(); toast('Se borraron el PIN y la lista.');
+  lib = {}; tomb = {}; saveLib(); sec = null; saveSec(); unlocked = false; clearTimeout(idleT);
+  updateSecUI(); renderMine(); toast(cloud.user ? 'Se quitó el PIN. Tu lista se vuelve a descargar de la nube.' : 'Se borraron el PIN y la lista.');
 }
 const LOCK_SVG = { closed: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>', open: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 7.5-1.5"/></svg>' };
 function updateSecUI() {
@@ -1518,6 +1582,226 @@ document.addEventListener('visibilitychange', () => {
   if (document.hidden) hiddenAt = Date.now();
   else if (pinSet() && unlocked && hiddenAt && Date.now() - hiddenAt > 60e3) lockNow(true);
 });
+
+/* ================= Nube (Firebase) ================= */
+const FB_BASE = 'https://www.gstatic.com/firebasejs/12.11.0/';
+const RULES = `rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{uid}/{document=**} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+  }
+}`;
+const cloud = { cfg: null, A: null, Au: null, F: null, app: null, auth: null, db: null, user: null, unsub: null, state: 'nocfg', err: '', last: 0, dirty: new Set(), pushT: null, blockPush: false };
+
+function parseFbConfig(txt) {
+  const out = {};
+  for (const k of ['apiKey', 'authDomain', 'projectId', 'storageBucket', 'messagingSenderId', 'appId', 'measurementId']) {
+    const m = new RegExp('["\']?' + k + '["\']?\\s*:\\s*["\']([^"\']+)["\']').exec(txt || '');
+    if (m) out[k] = m[1].trim();
+  }
+  if (!out.apiKey || !out.projectId || !out.appId) return null;
+  if (!out.authDomain) out.authDomain = out.projectId + '.firebaseapp.com';
+  return out;
+}
+const CLOUD_ERR = {
+  'auth/invalid-credential': 'Correo o contraseña incorrectos.', 'auth/wrong-password': 'Correo o contraseña incorrectos.', 'auth/user-not-found': 'Correo o contraseña incorrectos.',
+  'auth/email-already-in-use': 'Ese correo ya tiene cuenta. Tocá “Ingresar” en lugar de crear una.', 'auth/weak-password': 'La contraseña debe tener al menos 6 caracteres.',
+  'auth/invalid-email': 'El correo no es válido.', 'auth/missing-password': 'Escribí tu contraseña.', 'auth/too-many-requests': 'Demasiados intentos. Esperá un rato y probá de nuevo.',
+  'auth/network-request-failed': 'No hay conexión. Revisá tu internet.', 'auth/popup-blocked': 'El navegador bloqueó la ventana de Google. Permití ventanas emergentes.',
+  'auth/unauthorized-domain': 'Este sitio no está autorizado en Firebase. Agregalo en Authentication → Configuración → Dominios autorizados.',
+  'auth/operation-not-allowed': 'Ese método de acceso no está activado en Firebase (Authentication → Método de acceso).',
+  'auth/invalid-api-key': 'La configuración de Firebase no es válida (apiKey). Pegala de nuevo.', 'permission-denied': 'Firebase rechazó el acceso. Revisá que publicaste las reglas de Firestore.',
+  'unavailable': 'No se pudo conectar con Firebase. Se reintenta solo.', 'failed-precondition': 'Firestore no está creado en tu proyecto. Creá la base de datos en la consola.'
+};
+const cloudErr = e => CLOUD_ERR[e?.code] || ('Error: ' + (e?.code || e?.message || e));
+
+function setCloud(state, err = '') { cloud.state = state; cloud.err = err; updateCloudUI(); }
+function updateCloudUI() {
+  const st = { nocfg: 'Sin configurar', loading: 'Conectando…', signedout: 'Sin sesión', syncing: 'Sincronizando…', synced: 'Sincronizada', pending: 'Cambios por subir', offline: 'Sin conexión, cambios guardados', error: 'Error' };
+  const el = $('#cloudState'); if (!el) return;
+  el.textContent = st[cloud.state] || '';
+  const box = $('#cloudIn');
+  const time = cloud.last ? new Date(cloud.last).toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' }) : '';
+  const help = `<details style="margin-top:12px"><summary style="cursor:pointer;font-weight:700;color:var(--cyan);padding:0;display:block">Cómo configurar Firebase paso a paso (gratis)</summary>
+    <ol>
+      <li>Entrá a <b>console.firebase.google.com</b> con tu cuenta de Google y creá un proyecto (plan Spark, sin Analytics).</li>
+      <li><b>Compilación → Authentication → Comenzar</b> y activá “Correo electrónico/contraseña” (y “Google” si querés).</li>
+      <li>En Authentication → <b>Configuración → Dominios autorizados</b>, agregá <code>TU-USUARIO.github.io</code>.</li>
+      <li><b>Compilación → Firestore Database → Crear base de datos</b> (modo producción; una ubicación cercana, por ejemplo <code>southamerica-east1</code>).</li>
+      <li>En Firestore → <b>Reglas</b>, pegá estas reglas y tocá Publicar:<pre class="rules">${esc(RULES)}</pre><button class="btn ghost sm" data-cl="copyrules">Copiar reglas</button></li>
+      <li><b>⚙ Configuración del proyecto → Tus apps → Web (&lt;/&gt;)</b>, registrá la app y copiá el bloque <code>firebaseConfig</code>. Después tocá “Configurar Firebase” acá y pegalo.</li>
+    </ol></details>`;
+  let h = '';
+  if (cloud.state === 'nocfg') {
+    h = `<p>Guardá tu lista en la nube para no perderla si borrás los datos del navegador y verla igual en el celular y en la compu. Usa tu propio proyecto de Firebase (gratis) y solo vos accedés a tus datos.</p>
+      <div class="tools"><button class="btn pri sm" data-cl="cfg">Configurar Firebase</button></div>${help}`;
+  } else if (cloud.state === 'loading') {
+    h = '<p>Conectando con Firebase…</p>';
+  } else if (!cloud.user && cloud.state !== 'error') {
+    h = `<p>Iniciá sesión para guardar tu lista en la nube y verla en todos tus dispositivos. Lo que ya tenés en este dispositivo se conserva y se une a tu cuenta.</p>
+      <div class="tools"><button class="btn pri sm" data-cl="login">Iniciar sesión</button><button class="btn ghost sm" data-cl="cfgdel">Quitar configuración</button></div>`;
+  } else {
+    const who = cloud.user ? `<p>Sesión: <b>${esc(cloud.user.email || 'cuenta de Google')}</b></p>` : '';
+    const msg = cloud.state === 'error' ? `<p class="errline">${esc(cloud.err)}</p>` :
+      cloud.state === 'synced' ? `<p class="okline">Todo sincronizado${time ? ' a las ' + time : ''}.</p>` :
+      cloud.state === 'offline' ? '<p>Sin conexión: tus cambios se guardan y se suben cuando vuelva internet.</p>' :
+      cloud.state === 'pending' ? '<p>Hay cambios esperando para subirse.</p>' : '<p>Sincronizando…</p>';
+    h = `${who}${msg}<div class="tools">${cloud.user ? '<button class="btn ghost sm" data-cl="sync">Sincronizar ahora</button><button class="btn ghost sm" data-cl="logout">Cerrar sesión</button>' : '<button class="btn pri sm" data-cl="login">Iniciar sesión</button><button class="btn ghost sm" data-cl="cfg">Cambiar configuración</button>'}</div>`;
+  }
+  if (box.dataset.h !== h) { box.dataset.h = h; box.innerHTML = h; }
+}
+
+async function cloudInit() {
+  cloud.cfg = store.get(LS.fb, null);
+  if (!cloud.cfg || !cloud.cfg.apiKey) { setCloud('nocfg'); return; }
+  setCloud('loading');
+  try {
+    const [A, Au, F] = await Promise.all([import(FB_BASE + 'firebase-app.js'), import(FB_BASE + 'firebase-auth.js'), import(FB_BASE + 'firebase-firestore.js')]);
+    Object.assign(cloud, { A, Au, F });
+    cloud.app = A.initializeApp(cloud.cfg);
+    cloud.auth = Au.getAuth(cloud.app);
+    try { cloud.db = F.initializeFirestore(cloud.app, { localCache: F.persistentLocalCache({ tabManager: F.persistentMultipleTabManager() }) }); }
+    catch { cloud.db = F.getFirestore(cloud.app); }
+    Au.onAuthStateChanged(cloud.auth, onCloudUser, e => setCloud('error', cloudErr(e)));
+  } catch (e) {
+    setCloud('error', navigator.onLine ? 'No se pudo cargar Firebase. Revisá la configuración pegada.' : 'Sin conexión: no se pudo cargar Firebase. Tu lista local sigue funcionando.');
+  }
+}
+async function onCloudUser(user) {
+  stopSync();
+  cloud.user = user;
+  if (!user) { setCloud('signedout'); return; }
+  const meta = store.get(LS.cloud, {});
+  if (meta.uid && meta.uid !== user.uid && Object.keys(lib).length) {
+    const ch = await askChoice({ title: 'Esta lista es de otra cuenta', msg: 'En este dispositivo hay una lista guardada de otra cuenta. ¿Qué querés hacer?', options: [{ id: 'merge', label: 'Combinarla con esta cuenta' }, { id: 'replace', label: 'Borrarla y usar la de esta cuenta' }, { id: 'cancel', label: 'Cancelar y salir' }] });
+    if (ch === null || ch === 'cancel') { try { await cloud.Au.signOut(cloud.auth); } catch {} return; }
+    if (ch === 'replace') { lib = {}; tomb = {}; saveLib(); refreshAllUI(); }
+  }
+  store.set(LS.cloud, { uid: user.uid });
+  startSync();
+}
+function stopSync() { if (cloud.unsub) { try { cloud.unsub(); } catch {} cloud.unsub = null; } clearTimeout(cloud.pushT); cloud.dirty.clear(); }
+function startSync() {
+  const { F, db, user } = cloud;
+  cloud.blockPush = false;
+  setCloud('syncing');
+  cloud.unsub = F.onSnapshot(F.collection(db, 'users', user.uid, 'items'), { includeMetadataChanges: true }, snap => {
+    const remote = new Map();
+    snap.docs.forEach(d => { const id = +d.id; if (id > 0) remote.set(id, d.data()); });
+    reconcile(remote);
+    if (!navigator.onLine) setCloud('offline');
+    else if (snap.metadata.hasPendingWrites) setCloud('pending');
+    else if (snap.metadata.fromCache) setCloud('syncing');
+    else { cloud.last = Date.now(); setCloud('synced'); }
+  }, err => setCloud('error', cloudErr(err)));
+}
+function resync() { if (!cloud.user) return; stopSync(); startSync(); }
+
+const cleanItem = r => ({ id: +r.id, t: String(r.t || ''), en: String(r.en || ''), es: String(r.es || ''), img: String(r.img || ''), y: r.y || null, type: String(r.type || ''), eps: r.eps || null, score: r.score || null, st: r.st, ep: +r.ep || 0, ts: +r.ts || 0 });
+// Une lo de la nube con lo local: para cada anime gana el cambio más reciente.
+function reconcile(remote) {
+  let changed = false;
+  const push = [];
+  const ids = new Set([...remote.keys(), ...Object.keys(lib).map(Number), ...Object.keys(tomb).map(Number)]);
+  for (const id of ids) {
+    const r = remote.get(id), l = lib[id];
+    const lt = l ? (l.ts || 0) : 0, tt = tomb[id] || 0, localTs = Math.max(lt, tt);
+    if (!r) { if (l) push.push(['set', l]); else if (tt) push.push(['del', id, tt]); continue; }
+    const rts = +r.ts || 0;
+    if (!r.deleted && !STATUS[r.st]) continue;          // dato inválido en la nube: se ignora
+    if (rts > localTs) {
+      if (r.deleted) { if (l) delete lib[id]; tomb[id] = rts; }
+      else { lib[id] = cleanItem({ ...r, id }); delete tomb[id]; }
+      changed = true;
+    } else if (localTs > rts) {
+      if (l && lt >= tt) push.push(['set', l]); else push.push(['del', id, tt]);
+    }
+  }
+  if (changed) { saveLib(); refreshAllUI(); }
+  if (push.length) cloudPush(push);
+}
+function cloudDirty(id) {
+  if (!cloud.user || !cloud.db) return;
+  cloud.dirty.add(id); clearTimeout(cloud.pushT);
+  cloud.pushT = setTimeout(() => {
+    const ops = [];
+    cloud.dirty.forEach(i => { if (lib[i]) ops.push(['set', lib[i]]); else ops.push(['del', i, tomb[i] || Date.now()]); });
+    cloud.dirty.clear();
+    if (ops.length) cloudPush(ops);
+  }, 500);
+}
+function cloudPush(ops) {
+  const { F, db, user } = cloud;
+  if (!user || !db || cloud.blockPush) return;
+  for (let k = 0; k < ops.length; k += 400) {
+    const batch = F.writeBatch(db);
+    ops.slice(k, k + 400).forEach(op => {
+      const isSet = op[0] === 'set', id = isSet ? op[1].id : op[1];
+      const data = isSet ? (({ id, t, en, es, img, y, type, eps, score, st, ep, ts }) => ({ id, t, en: en || '', es: es || '', img: img || '', y: y || null, type: type || '', eps: eps || null, score: score || null, st, ep: ep || 0, ts: ts || 0 }))(op[1]) : { id, deleted: true, ts: op[2] };
+      batch.set(F.doc(db, 'users', user.uid, 'items', String(id)), data);
+    });
+    batch.commit().catch(e => { cloud.blockPush = true; setCloud('error', cloudErr(e)); });
+  }
+}
+
+// ventanas
+function askChoice({ title, msg, options }) {
+  return new Promise(res => {
+    const d = $('#chooseDlg');
+    $('#chT').textContent = title; $('#chM').textContent = msg;
+    $('#chOpts').innerHTML = options.map(o => `<button class="shopt" data-ch="${esc(o.id)}">${esc(o.label)}</button>`).join('');
+    let done = false;
+    const onC = () => { if (!d.open) finish(null); };
+    const finish = v => { if (done) return; done = true; d.removeEventListener('close', onC); d.onclick = null; if (d.open) d.close(); res(v); };
+    d.onclick = e => { const b = e.target.closest('[data-ch]'); if (b) finish(b.dataset.ch); else if (e.target === d) finish(null); };
+    d.addEventListener('close', onC); d.showModal();
+  });
+}
+$('#cfgNo').addEventListener('click', () => $('#cfgDlg').close());
+$('#cfgSave').addEventListener('click', () => {
+  const cfg = parseFbConfig($('#cfgIn').value);
+  if (!cfg) { $('#cfgE').textContent = 'No encontré apiKey, projectId y appId. Pegá el bloque firebaseConfig completo.'; return; }
+  store.set(LS.fb, cfg); location.reload();
+});
+const authDlg = $('#authDlg');
+authDlg.addEventListener('click', async e => {
+  const b = e.target.closest('[data-au]');
+  if (!b) { if (e.target === authDlg) authDlg.close(); return; }
+  const act = b.dataset.au, email = $('#auEmail').value.trim(), pass = $('#auPass').value, err = m => { $('#auE').textContent = m; };
+  if (act === 'cancel') return authDlg.close();
+  b.disabled = true; err('');
+  try {
+    const { Au, auth } = cloud;
+    if (act === 'google') await Au.signInWithPopup(auth, new Au.GoogleAuthProvider());
+    else if (act === 'reset') {
+      if (!email) { err('Escribí tu correo arriba y tocá de nuevo.'); return; }
+      await Au.sendPasswordResetEmail(auth, email); toast('Te enviamos un correo para restablecer la contraseña.'); return;
+    } else {
+      if (!email || !pass) { err('Completá el correo y la contraseña.'); return; }
+      await (act === 'signup' ? Au.createUserWithEmailAndPassword(auth, email, pass) : Au.signInWithEmailAndPassword(auth, email, pass));
+    }
+    $('#auPass').value = ''; authDlg.close();
+  } catch (ex) {
+    if (ex.code !== 'auth/popup-closed-by-user' && ex.code !== 'auth/cancelled-popup-request') err(cloudErr(ex));
+  } finally { b.disabled = false; }
+});
+$('#cloudIn').addEventListener('click', async e => {
+  const b = e.target.closest('[data-cl]'); if (!b) return;
+  const a = b.dataset.cl;
+  if (a === 'cfg') { $('#cfgIn').value = ''; $('#cfgE').textContent = ''; $('#cfgDlg').showModal(); }
+  else if (a === 'login') { $('#auE').textContent = ''; authDlg.showModal(); $('#auEmail').focus(); }
+  else if (a === 'logout') { try { await cloud.Au.signOut(cloud.auth); toast('Sesión cerrada. Tu lista sigue guardada en este dispositivo.'); } catch (ex) { toast(cloudErr(ex)); } }
+  else if (a === 'sync') { resync(); toast('Sincronizando…'); }
+  else if (a === 'cfgdel') {
+    const ch = await askChoice({ title: 'Quitar la configuración', msg: 'Se desconecta de Firebase en este dispositivo. Tu lista local y la de la nube no se borran.', options: [{ id: 'ok', label: 'Quitar configuración' }, { id: 'no', label: 'Cancelar' }] });
+    if (ch === 'ok') { localStorage.removeItem(LS.fb); localStorage.removeItem(LS.cloud); location.reload(); }
+  }
+  else if (a === 'copyrules') { try { await navigator.clipboard.writeText(RULES); toast('Reglas copiadas'); } catch { toast('No se pudo copiar. Seleccionalas a mano.'); } }
+});
+window.addEventListener('online', () => { if (cloud.user && cloud.state === 'offline') resync(); });
+window.addEventListener('offline', () => { if (cloud.user) setCloud('offline'); });
 
 /* ================= Clicks globales ================= */
 document.addEventListener('click', e => {
@@ -1666,10 +1950,12 @@ $('#orderSel').value = ex.order;
 applyView();
 applyEs();
 updateSecUI();
+updateCloudUI();
 updateCounts();
 markActiveLetter($('#exLetters'), ex.letter);
 loadMore(true);
 loadShowcase();
+cloudInit();
 })();
 </script>
 </body>
