@@ -72,16 +72,21 @@ a{color:inherit}
 .ph{background:linear-gradient(110deg,var(--s2) 30%,#1e2238 50%,var(--s2) 70%);background-size:200% 100%;animation:shim 1.6s linear infinite}
 @keyframes shim{to{background-position:-200% 0}}
 
-/* ---------- Marquee ---------- */
-.mq-sec{padding:18px 0 8px;border-block:1px solid var(--line);background:rgba(255,255,255,.015)}
-.mq-row{display:flex;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);margin-bottom:10px}
-.mq-track{display:flex;gap:10px;flex:none;padding-right:10px;animation:mq 70s linear infinite}
-.mq-row.rev .mq-track{animation-direction:reverse;animation-duration:85s}
-.mq-row:hover .mq-track{animation-play-state:paused}
-@keyframes mq{to{transform:translateX(-100%)}}
-.mq{flex:none;width:86px;aspect-ratio:2/3;border-radius:12px;overflow:hidden;padding:0;border:1px solid var(--line);opacity:.82;transition:opacity .15s,border-color .15s}
-.mq:hover{opacity:1;border-color:var(--cyan)}
-.mq img{width:100%;height:100%;object-fit:cover}
+/* ---------- Carrusel ---------- */
+.car-sec{padding:28px 0 24px;border-block:1px solid var(--line);background:rgba(255,255,255,.015)}
+.car-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}
+.car-head h2{font-size:1.15rem}
+.car-ctl{display:flex;gap:8px}
+.car-ctl button{width:40px;height:40px;border-radius:50%;border:1px solid var(--line2);background:var(--s1);display:grid;place-items:center;font-size:1.15rem;line-height:1}
+.car-ctl button:hover{border-color:var(--cyan)}
+.car{display:flex;gap:14px;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;cursor:grab;-webkit-user-select:none;user-select:none;padding:4px 2px 8px}
+.car::-webkit-scrollbar{display:none}
+.car.drag{cursor:grabbing}
+.mq{flex:none;width:132px;text-align:left}
+.mq .im{aspect-ratio:2/3;border-radius:14px;overflow:hidden;border:1px solid var(--line);background:var(--s2);transition:border-color .15s,transform .15s}
+.mq:hover .im,.mq:focus-visible .im{border-color:var(--cyan);transform:translateY(-3px)}
+.mq img{width:100%;height:100%;object-fit:cover;pointer-events:none;-webkit-user-drag:none}
+.mq b{margin-top:8px;font:600 .82rem/1.25 'Sora',sans-serif;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 
 /* ---------- App ---------- */
 section.blk{padding:76px 0}
@@ -100,9 +105,9 @@ section.blk{padding:76px 0}
 .vbtns{display:inline-flex;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--s1)}
 .vbtns button{width:46px;height:42px;display:grid;place-items:center;color:var(--mut)}
 .vbtns button[aria-pressed=true]{background:var(--s2);color:#fff}
-.lbar{position:sticky;top:var(--hh);z-index:20;display:flex;gap:6px;overflow-x:auto;padding:10px 4px 8px;margin:0 -4px 10px;background:linear-gradient(var(--bg) 82%,rgba(7,8,13,0));scrollbar-width:none}
+.lbar{position:sticky;top:var(--hh);z-index:20;display:flex;gap:5px;overflow-x:auto;padding:10px 4px 8px;margin:0 -4px 10px;background:linear-gradient(var(--bg) 82%,rgba(7,8,13,0));scrollbar-width:none}
 .lbar::-webkit-scrollbar{display:none}
-.lbtn{position:relative;flex:0 0 auto;min-width:38px;height:38px;padding:0 10px;border-radius:10px;border:1px solid var(--line);background:var(--s1);font:700 .9rem 'Sora',sans-serif;color:var(--tx)}
+.lbtn{position:relative;flex:0 0 auto;min-width:36px;height:38px;padding:0 8px;border-radius:10px;border:1px solid var(--line);background:var(--s1);font:700 .9rem 'Sora',sans-serif;color:var(--tx)}
 .lbtn:hover{border-color:var(--line2)}
 .lbtn.act{background:linear-gradient(135deg,var(--violet),var(--blue));border-color:transparent;color:#fff}
 .lbtn[data-n]::after{content:attr(data-n);position:absolute;top:-5px;right:-4px;min-width:17px;height:17px;padding:0 4px;border-radius:9px;background:var(--ok);color:#06150e;font:700 10px/17px 'DM Sans',sans-serif;text-align:center}
@@ -164,7 +169,8 @@ section.blk{padding:76px 0}
 
 /* Personajes */
 .chr-row{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x proximity;padding:4px 2px 14px;scrollbar-width:thin}
-.chr{flex:0 0 156px;scroll-snap-align:start}
+.chr{flex:0 0 156px;scroll-snap-align:start;display:block;text-align:left;cursor:pointer}
+.chr:hover .im{border-color:var(--cyan)}
 .chr .im{aspect-ratio:3/4;border-radius:18px;overflow:hidden;background:var(--s2);border:1px solid var(--line)}
 .chr img{width:100%;height:100%;object-fit:cover}
 .chr b{display:block;margin-top:8px;font:600 .92rem/1.25 'Sora',sans-serif}
@@ -221,6 +227,21 @@ dialog.modal{width:min(900px,100% - 24px);max-width:none;max-height:calc(100dvh 
 .mprog button{width:38px;height:38px;border-radius:50%;border:1px solid var(--line2);font-size:1.2rem;font-weight:700}
 .mprog button:hover{border-color:var(--cyan)}
 .mprog b{font:700 1.05rem 'Sora',sans-serif;min-width:64px;text-align:center}
+.char{display:block;width:100%;text-align:left;cursor:pointer}
+.char .im{position:relative;transition:border-color .15s,transform .15s}
+.char:hover .im,.char:focus-visible .im{border-color:var(--cyan);transform:translateY(-2px)}
+.char .im.noimg{display:grid;place-items:center;font:700 1.8rem 'Sora',sans-serif;color:var(--mut)}
+.chtools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px}
+.chtools .inp{flex:1 1 200px;height:40px}
+.chgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:18px}
+.cmhead{display:grid;grid-template-columns:190px 1fr;gap:22px;margin-bottom:8px}
+.cmimg{width:190px;aspect-ratio:3/4;border-radius:16px;overflow:hidden;background:var(--s2);border:1px solid var(--line)}
+.cmimg img{width:100%;height:100%;object-fit:cover}
+.vagrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.va{display:flex;align-items:center;gap:10px;padding:8px;border:1px solid var(--line);border-radius:14px;background:var(--s2)}
+.va img{width:42px;height:54px;object-fit:cover;border-radius:8px;flex:none}
+.va b{display:block;font-size:.88rem;line-height:1.25}
+.va span{font-size:.78rem;color:var(--mut)}
 .msec{margin-top:24px}
 .msec h4{font-size:1.05rem;margin-bottom:10px}
 .msyn{color:var(--soft);white-space:pre-line;max-width:70ch}
@@ -265,6 +286,9 @@ dialog.sheet{width:min(420px,100% - 24px);max-width:none;margin:auto;padding:0;b
   .mwrap{max-height:100dvh;padding:18px 16px calc(24px + env(safe-area-inset-bottom,0px))}
   .mhead{grid-template-columns:116px 1fr;gap:14px}
   .mposter{width:116px;border-radius:12px}
+  .cmhead{grid-template-columns:116px 1fr;gap:14px}
+  .cmimg{width:116px;border-radius:12px}
+  .chgrid{grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:14px}
   .hact .btn.ghost{display:none}
   .tab{padding:9px 16px}
   dialog.sheet{width:100%;margin:auto 0 0;border-radius:22px 22px 0 0;border-bottom:0}
@@ -272,8 +296,7 @@ dialog.sheet{width:min(420px,100% - 24px);max-width:none;margin:auto;padding:0;b
 }
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
-  .fan-in,.mq-track,.ph{animation:none}
-  .mq-row{overflow-x:auto}
+  .fan-in,.ph{animation:none}
 }
 </style>
 </head>
@@ -284,6 +307,7 @@ dialog.sheet{width:min(420px,100% - 24px);max-width:none;margin:auto;padding:0;b
     <a class="logo" href="#top"><img src="icon-192.png" alt="" width="30" height="30">Animeteca</a>
     <nav class="nav" aria-label="Secciones">
       <a href="#app" data-tab="explore">Explorar</a>
+      <a href="#app" data-tab="chars">Personajes</a>
       <a href="#app" data-tab="mine">Mi lista</a>
       <a href="#como">Cómo funciona</a>
       <a href="#faq">Preguntas</a>
@@ -300,7 +324,7 @@ dialog.sheet{width:min(420px,100% - 24px);max-width:none;margin:auto;padding:0;b
   <div class="wrap hero-grid">
     <div>
       <h1>Todo el anime, de la A a la Z</h1>
-      <p class="lead">Descripción, fotos de los personajes principales y un índice alfabético para marcar lo que estás viendo. Funciona en la compu y en el celu.</p>
+      <p class="lead">Descripción, todos los personajes con su foto y su historia, y un índice alfabético para marcar lo que estás viendo. Funciona en la compu y en el celu.</p>
       <div class="cta">
         <a class="btn pri" href="#app" data-tab="explore">Explorar el catálogo</a>
         <a class="btn ghost" href="#app" data-tab="mine">Ver mi lista</a>
@@ -315,9 +339,18 @@ dialog.sheet{width:min(420px,100% - 24px);max-width:none;margin:auto;padding:0;b
   </div>
 </section>
 
-<section class="mq-sec" id="mqSec" hidden aria-label="Anime más valorados">
-  <div class="mq-row" id="mq1"></div>
-  <div class="mq-row rev" id="mq2"></div>
+<section class="car-sec" id="mqSec" hidden aria-label="Anime mejor puntuados">
+  <div class="wrap">
+    <div class="car-head">
+      <h2>Los mejor puntuados</h2>
+      <div class="car-ctl">
+        <button id="carPlay" aria-label="Pausar el movimiento automático" title="Pausar / reanudar">⏸</button>
+        <button id="carPrev" aria-label="Anteriores">‹</button>
+        <button id="carNext" aria-label="Siguientes">›</button>
+      </div>
+    </div>
+    <div class="car" id="car" tabindex="0" aria-label="Carrusel de anime, usá las flechas del teclado para moverte"></div>
+  </div>
 </section>
 
 <section class="blk" id="app">
@@ -329,6 +362,7 @@ dialog.sheet{width:min(420px,100% - 24px);max-width:none;margin:auto;padding:0;b
       </div>
       <div class="tabs" role="tablist">
         <button class="tab" role="tab" id="tabExplore" aria-selected="true" data-tab="explore">Explorar</button>
+        <button class="tab" role="tab" id="tabChars" aria-selected="false" data-tab="chars">Personajes</button>
         <button class="tab" role="tab" id="tabMine" aria-selected="false" data-tab="mine">Mi lista <span class="pill-n" id="tabCount">0</span></button>
       </div>
     </div>
@@ -351,18 +385,31 @@ dialog.sheet{width:min(420px,100% - 24px);max-width:none;margin:auto;padding:0;b
           <option value="new">Más nuevos</option>
           <option value="az">Orden A–Z</option>
         </select>
+        <button class="chip act" id="esBtn" aria-pressed="true" style="height:44px">Descripciones en español</button>
         <div class="vbtns" id="viewBtns" role="group" aria-label="Vista">
           <button data-v="cards" aria-label="Vista con descripción" aria-pressed="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><path d="M14 6h7M14 9h5M14 16h7M14 19h5"/></svg></button>
           <button data-v="list" aria-label="Vista compacta" aria-pressed="false"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
         </div>
       </div>
       <div class="lbar" id="exLetters" aria-label="Índice alfabético"></div>
-      <p class="hint">El índice usa el título original en romaji (por ejemplo, “Shingeki no Kyojin” está en la S). Para buscar por otro nombre, usá el buscador.</p>
+      <p class="hint">Arrancás con los más relevantes. Elegí una letra para ver el resto, ordenado por popularidad. El índice usa el título original en romaji (por ejemplo, “Shingeki no Kyojin” está en la S); para otros nombres, usá el buscador.</p>
       <p class="count" id="exCount" aria-live="polite"></p>
       <div class="grid" id="exGrid"></div>
       <div id="exMsg"></div>
       <div class="more"><button class="btn ghost" id="exMore" hidden>Cargar más</button></div>
-      <div id="exSentinel" style="height:1px"></div>
+    </div>
+
+    <!-- PERSONAJES -->
+    <div id="pChars" hidden>
+      <div class="toolbar">
+        <input class="inp" id="cqIn" type="search" placeholder="Buscar personaje por nombre (3 letras o más)" aria-label="Buscar personaje" autocomplete="off" enterkeyhint="search">
+      </div>
+      <div class="lbar" id="cxLetters" aria-label="Índice alfabético de personajes"></div>
+      <p class="hint">El índice usa el apellido o nombre tal como figura en MyAnimeList (por ejemplo, “Uzumaki, Naruto” está en la U). Arrancás con los más queridos; elegí una letra para ver el resto. Tocá uno para ver su descripción.</p>
+      <p class="count" id="cxCount" aria-live="polite"></p>
+      <div class="chgrid" id="cxGrid"></div>
+      <div id="cxMsg"></div>
+      <div class="more"><button class="btn ghost" id="cxMore" hidden>Cargar más</button></div>
     </div>
 
     <!-- MI LISTA -->
@@ -411,7 +458,7 @@ dialog.sheet{width:min(420px,100% - 24px);max-width:none;margin:auto;padding:0;b
         <div class="vis" id="vis2" aria-hidden="true"></div>
         <span class="n">Paso 2</span>
         <h3>Abrí la ficha</h3>
-        <p>Descripción, puntaje, géneros y las fotos de los personajes principales.</p>
+        <p>Descripción, puntaje, géneros y todos sus personajes. Tocá uno para leer su historia.</p>
       </div>
       <div class="step">
         <div class="vis" id="vis3" aria-hidden="true"></div>
@@ -430,7 +477,8 @@ dialog.sheet{width:min(420px,100% - 24px);max-width:none;margin:auto;padding:0;b
       <details><summary>¿De dónde salen los anime y las imágenes?</summary><p>De MyAnimeList, a través de las APIs gratuitas Tenrai y Jikan. No hace falta cuenta ni clave, y el catálogo se actualiza solo.</p></details>
       <details><summary>¿Dónde se guardan mis marcas?</summary><p>En este dispositivo, dentro del navegador. Para pasarlas a otro dispositivo o hacer una copia de seguridad, usá “Exportar copia” en Mi lista e “Importar copia” en el otro.</p></details>
       <details><summary>¿Por qué el índice usa nombres en japonés?</summary><p>Las letras se arman con el título original en romaji. Si buscás “Attack on Titan”, usá el buscador: encuentra también los nombres en inglés.</p></details>
-      <details><summary>¿Las descripciones están en español?</summary><p>Vienen en inglés. En cada ficha hay un botón para traducirlas al español; usa un servicio gratuito con límite diario, así que puede fallar si se agotó.</p></details>
+      <details><summary>¿Están todos los personajes?</summary><p>Cada ficha lista todos los personajes que MyAnimeList tiene cargados para ese anime, con buscador y filtro de principales. Además, en la pestaña Personajes podés recorrerlos a todos por letra o buscándolos por nombre. Si un personaje no tiene foto o descripción, es porque falta en la base de datos.</p></details>
+      <details><summary>¿Las descripciones están en español?</summary><p>Vienen en inglés desde MyAnimeList y la app las traduce sola al español latino, usando Google Translate y MyMemory de respaldo. Las traducciones se guardan en tu dispositivo. Si el servicio falla, ves el original. Con el botón “Descripciones en español” podés apagar o prender la traducción, y en cada ficha podés ver el texto original.</p></details>
       <details><summary>¿Cómo la instalo en el celular?</summary><p>Desde Chrome en Android, tocá el botón “Instalar app” o el menú ⋮ y elegí “Instalar app” / “Agregar a la pantalla principal”.</p></details>
       <details><summary>Dice que no pudo cargar. ¿Qué hago?</summary><p>Los datos vienen de servicios gratuitos (Tenrai, con Jikan de respaldo) que a veces se saturan o se caen. Esperá unos segundos y tocá “Reintentar”. Tu lista guardada se ve igual aunque no haya conexión.</p></details>
     </div>
@@ -455,6 +503,9 @@ dialog.sheet{width:min(420px,100% - 24px);max-width:none;margin:auto;padding:0;b
 
 <!-- Ficha -->
 <dialog class="modal" id="modal" aria-label="Ficha del anime"><div class="mwrap" id="mBody"></div></dialog>
+
+<!-- Ficha del personaje -->
+<dialog class="modal" id="cmodal" aria-label="Ficha del personaje"><div class="mwrap" id="cBody"></div></dialog>
 
 <!-- Selector de estado -->
 <dialog class="sheet" id="sheet" aria-labelledby="shTitle">
@@ -490,7 +541,7 @@ const store = {
   get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } },
   set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch { return false; } }
 };
-const LS = { lib: 'animeteca.lib.v1', prefs: 'animeteca.prefs.v1', cache: 'animeteca.cache.v1', tr: 'animeteca.tr.v1' };
+const LS = { lib: 'animeteca.lib.v1', prefs: 'animeteca.prefs.v1', cache: 'animeteca.cache.v1', tr: 'animeteca.tr.v1', trc: 'animeteca.trc.v1', trh: 'animeteca.trh.v1' };
 
 const STATUS = {
   watching: { label: 'Viendo',     icon: '▶', color: '#3cd3ff' },
@@ -498,14 +549,15 @@ const STATUS = {
   plan:     { label: 'Pendiente',  icon: '+', color: '#9a86ff' },
   drop:     { label: 'Abandonado', icon: '✕', color: '#ff5d73' }
 };
-const TYPE_ES = { TV: 'Serie TV', Movie: 'Película', OVA: 'OVA', ONA: 'ONA', Special: 'Especial', 'TV Special': 'Especial TV', Music: 'Música' };
+const TYPE_ES = { TV: 'Serie TV', Movie: 'Película', OVA: 'OVA', ONA: 'ONA', Special: 'Especial', 'TV Special': 'Especial TV', Music: 'Música', CM: 'Comercial', PV: 'Avance' };
 const AIR_ES = { 'Finished Airing': 'Finalizado', 'Currently Airing': 'En emisión', 'Not yet aired': 'Próximamente' };
 
 /* ================= Estado persistente ================= */
 let lib = store.get(LS.lib, {});
-const prefs = Object.assign({ view: 'cards', order: 'pop', letter: 'A', type: '' }, store.get(LS.prefs, {}));
+const prefs = Object.assign({ view: 'cards', order: 'pop', letter: 'A', type: '', es: true }, store.get(LS.prefs, {}));
 const savePrefs = () => store.set(LS.prefs, prefs);
 const animeCache = new Map();
+const charSum = new Map();
 let tab = 'explore';
 
 /* ================= Cliente de datos (cola con ritmo + respaldo) ================= */
@@ -572,6 +624,7 @@ const toItem = a => ({
   id: a.mal_id,
   t: a.title || a.title_english || '',
   en: (a.title_english && a.title_english !== a.title) ? a.title_english : '',
+  es: ((a.titles || []).find(x => x.type === 'Spanish') || {}).title || '',
   img: imgOf(a),
   y: a.year || a.aired?.prop?.from?.year || null,
   type: a.type || '',
@@ -636,9 +689,9 @@ function cardHTML(it, syn) {
     <div class="poster">${it.img ? `<img loading="lazy" decoding="async" referrerpolicy="no-referrer" src="${esc(it.img)}" alt="">` : ''}</div>
     <div class="cbody">
       <h3><button class="open" data-open="${it.id}">${esc(it.t)}</button></h3>
-      ${it.en ? `<p class="alt">${esc(it.en)}</p>` : ''}
+      ${(it.es || it.en) ? `<p class="alt">${esc(it.es || it.en)}</p>` : ''}
       <div class="meta">${meta}</div>
-      ${syn ? `<p class="syn">${esc(syn)}</p>` : ''}
+      ${syn ? `<p class="syn" data-syn="${it.id}">${esc((prefs.es && trStore.c[it.id]) || syn)}</p>` : ''}
     </div>
     <div class="cfoot">${stBtn(it.id)}${epBox(it.id)}</div>
   </article>`;
@@ -683,12 +736,12 @@ const ORDERS = {
   new:   { order_by: 'start_date', sort: 'desc' },
   az:    { order_by: 'title', sort: 'asc' }
 };
-const ex = { letter: prefs.letter, q: '', type: prefs.type, order: prefs.order, page: 0, next: true, total: null, shown: 0, seen: new Set(), loading: false, gen: 0, error: false };
+const ex = { letter: '', q: '', type: prefs.type, order: prefs.order, page: 0, next: true, total: null, shown: 0, seen: new Set(), loading: false, gen: 0, error: false };
 const exGrid = $('#exGrid'), exMsg = $('#exMsg'), exMore = $('#exMore'), exCount = $('#exCount');
 
-function buildLetterBar(el, withAll, withHash) {
-  const list = [...(withAll ? [''] : []), ...LETTERS, ...(withHash ? ['#'] : [])];
-  el.innerHTML = list.map(l => `<button class="lbtn" data-l="${l}">${l || 'Todos'}</button>`).join('');
+function buildLetterBar(el, firstLabel, withHash) {
+  const list = [...(firstLabel ? [''] : []), ...LETTERS, ...(withHash ? ['#'] : [])];
+  el.innerHTML = list.map(l => `<button class="lbtn" data-l="${l}">${l || firstLabel}</button>`).join('');
 }
 function markActiveLetter(el, letter) {
   $$('.lbtn', el).forEach(b => b.classList.toggle('act', b.dataset.l === letter));
@@ -699,7 +752,8 @@ function markActiveLetter(el, letter) {
 function updateCount() {
   if (ex.error) { exCount.textContent = ''; return; }
   if (ex.total == null) { exCount.textContent = ''; return; }
-  const what = ex.q ? `“${ex.q}”` : (ex.letter ? `la letra ${ex.letter}` : 'todo el catálogo');
+  if (!ex.q && !ex.letter) { exCount.textContent = `Los ${nf.format(ex.shown)} más relevantes. Elegí una letra para explorar el resto del catálogo.`; return; }
+  const what = ex.q ? `“${ex.q}”` : `la letra ${ex.letter}`;
   exCount.textContent = `${nf.format(ex.total)} títulos para ${what}, mostrando ${nf.format(ex.shown)}`;
 }
 function skeletons() {
@@ -722,12 +776,13 @@ async function loadMore(reset) {
     if (gen !== ex.gen) return;
     $$('.sk', exGrid).forEach(n => n.remove());
     ex.page++;
-    ex.next = !!r.pagination?.has_next_page;
+    ex.next = !!r.pagination?.has_next_page && !!(ex.q || ex.letter);
     ex.total = r.pagination?.items?.total ?? ex.total;
     const fresh = (r.data || []).filter(a => !ex.seen.has(a.mal_id));
     fresh.forEach(a => { ex.seen.add(a.mal_id); animeCache.set(a.mal_id, a); });
     ex.shown += fresh.length;
     exGrid.insertAdjacentHTML('beforeend', fresh.map(a => cardHTML(toItem(a), shortSyn(a.synopsis))).join(''));
+    watchSyns(exGrid);
     if (!ex.shown) exMsg.innerHTML = '<div class="msg">No hay resultados con estos filtros. Probá con otra letra o cambiá el tipo.</div>';
     exMore.hidden = !ex.next;
     updateCount();
@@ -737,16 +792,9 @@ async function loadMore(reset) {
     ex.error = true;
     exMsg.innerHTML = `<div class="msg">No pude cargar los títulos. Puede ser tu conexión o que el servicio de datos esté caído.<br><span class="muted" style="font-size:.82rem">Detalle: ${esc(e.message || e)}</span><br><button class="btn pri sm" id="exRetry">Reintentar</button></div>`;
   } finally {
-    if (gen === ex.gen) { ex.loading = false; if (!ex.error) fillViewport(); }
+    if (gen === ex.gen) ex.loading = false;
   }
 }
-function fillViewport() {
-  if (tab !== 'explore' || !ex.next || ex.loading || ex.error) return;
-  const r = $('#exSentinel').getBoundingClientRect();
-  if (r.top < innerHeight + 600) loadMore();
-}
-new IntersectionObserver(es => { if (es[0].isIntersecting && tab === 'explore') loadMore(); }, { rootMargin: '700px' }).observe($('#exSentinel'));
-
 function resetExplorer() { markActiveLetter($('#exLetters'), ex.q ? null : ex.letter); loadMore(true); }
 
 $('#exLetters').addEventListener('click', e => {
@@ -769,6 +817,7 @@ $('#qIn').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventD
 $('#typeSel').addEventListener('change', e => { ex.type = e.target.value; prefs.type = ex.type; savePrefs(); resetExplorer(); });
 $('#orderSel').addEventListener('change', e => { ex.order = e.target.value; prefs.order = ex.order; savePrefs(); resetExplorer(); });
 exMore.addEventListener('click', () => loadMore());
+exMore.textContent = 'Cargar más títulos';
 exMsg.addEventListener('click', e => { if (e.target.id === 'exRetry') loadMore(); });
 
 function applyView() {
@@ -794,7 +843,7 @@ function renderMineChrome() {
   const byL = {};
   all.forEach(i => { const l = letterOf(i.t); byL[l] = (byL[l] || 0) + 1; });
   const bar = $('#myLetters');
-  if (!bar.children.length) buildLetterBar(bar, true, true);
+  if (!bar.children.length) buildLetterBar(bar, 'Todas', true);
   $$('.lbtn', bar).forEach(b => {
     const l = b.dataset.l, n = byL[l];
     b.classList.toggle('act', my.letter === l);
@@ -810,7 +859,7 @@ function renderMineList() {
     return;
   }
   const q = norm(my.q);
-  const items = all.filter(i => (my.f === 'all' || i.st === my.f) && (!my.letter || letterOf(i.t) === my.letter) && (!q || norm(i.t + ' ' + i.en).includes(q)))
+  const items = all.filter(i => (my.f === 'all' || i.st === my.f) && (!my.letter || letterOf(i.t) === my.letter) && (!q || norm(i.t + ' ' + i.en + ' ' + (i.es || '')).includes(q)))
     .sort((a, b) => collator.compare(a.t, b.t));
   if (!items.length) { box.innerHTML = '<div class="msg">Nada coincide con ese filtro.</div>'; return; }
   const groups = {};
@@ -855,12 +904,15 @@ $('#impFile').addEventListener('change', async e => {
 /* ================= Pestañas ================= */
 function setTab(t) {
   tab = t;
-  $('#pExplore').hidden = t !== 'explore';
-  $('#pMine').hidden = t !== 'mine';
+  const map = { explore: 'pExplore', chars: 'pChars', mine: 'pMine' };
+  Object.entries(map).forEach(([k, id]) => { $('#' + id).hidden = k !== t; });
   $('#tabExplore').setAttribute('aria-selected', String(t === 'explore'));
+  $('#tabChars').setAttribute('aria-selected', String(t === 'chars'));
   $('#tabMine').setAttribute('aria-selected', String(t === 'mine'));
-  if (t === 'mine') renderMine(); else fillViewport();
-}
+  if (t === 'mine') renderMine();
+  else if (t === 'chars') { if (!cx.started) { cx.started = true; loadChars(true); } }
+  }
+
 
 /* ================= Ficha (modal) ================= */
 const modal = $('#modal'), mBody = $('#mBody');
@@ -893,14 +945,14 @@ function renderModal(a, it) {
   if (base.y) tags.push(String(base.y));
   if (a?.status) tags.push(AIR_ES[a.status] || a.status);
   if (a?.studios?.length) tags.push(a.studios[0].name);
-  const genres = a ? [...(a.genres || []), ...(a.themes || []), ...(a.demographics || [])].map(g => g.name) : [];
+  const genres = a ? [...(a.genres || []), ...(a.themes || []), ...(a.demographics || [])].map(g => gEs(g.name)) : [];
   mBody.innerHTML = `
     <button class="mclose" id="mClose" aria-label="Cerrar">✕</button>
     <div class="mhead">
       <div class="mposter">${base.img ? `<img src="${esc(base.img)}" alt="Póster de ${esc(base.t)}" referrerpolicy="no-referrer">` : ''}</div>
       <div class="minfo">
         <h2>${esc(base.t)}</h2>
-        ${(base.en || a?.title_japanese) ? `<p class="jp">${esc([base.en, a?.title_japanese].filter(Boolean).join(' / '))}</p>` : ''}
+        ${(base.es || base.en || a?.title_japanese) ? `<p class="jp">${esc([base.es, base.en, a?.title_japanese].filter(Boolean).join(' / '))}</p>` : ''}
         <div class="chips">${base.score ? `<span class="tag sc">★ ${Number(base.score).toFixed(2)}</span>` : ''}${tags.map(t => `<span class="tag">${esc(t)}</span>`).join('')}</div>
         <div class="mstat" id="mStat"></div>
         <div class="mprog" id="mProg" hidden></div>
@@ -912,7 +964,16 @@ function renderModal(a, it) {
       <button class="linkbtn" id="trBtn" hidden>Traducir al español</button>
     </div>
     ${genres.length ? `<div class="msec"><h4>Géneros y temas</h4><div class="chips" style="margin:0">${genres.map(g => `<span class="tag">${esc(g)}</span>`).join('')}</div></div>` : ''}
-    <div class="msec"><h4>Personajes</h4><div class="chars" id="mChars">${Array.from({ length: 6 }, () => '<div class="char"><div class="im ph"></div></div>').join('')}</div></div>
+    <div class="msec">
+      <h4>Personajes <span class="muted" id="chCount" style="font:400 .9rem 'DM Sans',sans-serif"></span></h4>
+      <div class="chtools">
+        <input class="inp" id="chQ" type="search" placeholder="Buscar personaje" aria-label="Buscar personaje" autocomplete="off">
+        <button class="chip act" data-chf="all">Todos</button>
+        <button class="chip" data-chf="main">Principales</button>
+      </div>
+      <div class="chars" id="mChars">${Array.from({ length: 6 }, () => '<div class="char"><div class="im ph"></div></div>').join('')}</div>
+      <div class="more"><button class="btn ghost sm" id="chMore" hidden>Ver más personajes</button></div>
+    </div>
     <div class="mlinks">
       ${a?.trailer?.url ? `<a class="btn ghost sm" href="${esc(a.trailer.url)}" target="_blank" rel="noopener">Ver tráiler</a>` : ''}
       ${a?.url ? `<a class="btn ghost sm" href="${esc(a.url)}" target="_blank" rel="noopener">Ver en MyAnimeList</a>` : ''}
@@ -920,20 +981,25 @@ function renderModal(a, it) {
   const syn = a ? cleanSyn(a.synopsis) : '';
   $('#mSyn').textContent = (a && !a._min) ? (syn || 'Este anime todavía no tiene descripción.') : 'Cargando descripción…';
   const trBtn = $('#trBtn');
-  if (syn) {
+  if (syn && !a._min) {
+    const myId = curId;
     trBtn.hidden = false;
-    const cached = store.get(LS.tr, {})[curId];
     let showing = 'en';
-    const set = (lang, text) => { $('#mSyn').textContent = text; showing = lang; trBtn.textContent = lang === 'es' ? 'Ver original en inglés' : 'Traducir al español'; };
-    trBtn.onclick = async () => {
-      if (showing === 'es') return set('en', syn);
+    const set = (lang, text) => { if (curId !== myId || !$('#mSyn')) return; $('#mSyn').textContent = text; showing = lang; trBtn.textContent = lang === 'es' ? 'Ver original en inglés' : 'Traducir al español'; };
+    const goEs = async manual => {
       trBtn.disabled = true; trBtn.textContent = 'Traduciendo…';
-      try { set('es', await translate(curId, syn)); }
-      catch { trBtn.textContent = 'Traducir al español'; toast('No se pudo traducir ahora. Probá más tarde.'); }
-      trBtn.disabled = false;
+      try {
+        const es = trStore.f[myId] || await trEnqueue(() => translateText(syn), true);
+        putTr('f', myId, es); set('es', es);
+      } catch {
+        if (curId === myId) { trBtn.textContent = 'Traducir al español'; if (manual) toast('No se pudo traducir ahora. Probá más tarde.'); }
+      }
+      if (curId === myId) trBtn.disabled = false;
     };
-    if (cached) set('es', cached);
-  }
+    trBtn.onclick = () => { showing === 'es' ? set('en', syn) : goEs(true); };
+    if (trStore.f[myId]) set('es', trStore.f[myId]);
+    else { trBtn.textContent = 'Traducir al español'; if (prefs.es) goEs(false); }
+  } else trBtn.hidden = true;
   renderControls();
   mBody.scrollTop = 0;
 }
@@ -959,31 +1025,69 @@ mBody.addEventListener('click', e => {
 });
 modal.addEventListener('click', e => { if (e.target === modal) modal.close(); });
 modal.addEventListener('close', () => {
-  curId = null; document.body.classList.remove('lock');
+  curId = null; if (!cm.open) document.body.classList.remove('lock');
   if (history.state && history.state.m) history.back();
 });
-window.addEventListener('popstate', () => { if (modal.open) modal.close(); });
+let skipPop = false;
+window.addEventListener('popstate', () => { if (skipPop) { skipPop = false; return; } if (cm.open) cm.close(); else if (modal.open) modal.close(); });
+
+const okImg = u => (u && !/questionmark/.test(u)) ? u : '';
+const roleEs = r => r === 'Main' ? 'Principal' : 'Secundario';
+const chState = { id: null, list: [], q: '', f: 'all', shown: 30 };
+const charCard = c => `<button class="char" data-char="${c.id}"><div class="im ${c.img ? '' : 'noimg'}">${c.img ? `<img loading="lazy" decoding="async" referrerpolicy="no-referrer" src="${esc(c.img)}" alt="">` : `<span>${esc((c.name || '?').charAt(0))}</span>`}</div><b>${esc(c.name)}</b><span>${c.role ? roleEs(c.role) : '♥ ' + nf.format(c.fav || 0)}</span></button>`;
 
 async function loadCharacters(id) {
   const box = $('#mChars'); if (!box) return;
+  Object.assign(chState, { id, list: [], q: '', f: 'all', shown: 30 });
   try {
     const r = await jikan(`/anime/${id}/characters`, {}, true);
     if (curId !== id) return;
-    const list = (r.data || [])
-      .filter(c => { const u = c.character?.images?.jpg?.image_url; return u && !/questionmark/.test(u); })
-      .sort((x, y) => (x.role === 'Main' ? 0 : 1) - (y.role === 'Main' ? 0 : 1) || (y.favorites || 0) - (x.favorites || 0))
-      .slice(0, 18);
-    box.innerHTML = list.length
-      ? list.map(c => `<figure class="char" style="margin:0"><div class="im"><img loading="lazy" referrerpolicy="no-referrer" src="${esc(c.character.images.jpg.image_url)}" alt=""></div><b>${esc(fixName(c.character.name))}</b><span>${c.role === 'Main' ? 'Principal' : 'Secundario'}</span></figure>`).join('')
-      : '<p class="muted" style="grid-column:1/-1">Este anime no tiene personajes cargados todavía.</p>';
+    chState.list = (r.data || []).filter(c => c.character?.mal_id).map(c => ({
+      id: c.character.mal_id, name: fixName(c.character.name), img: okImg(c.character.images?.jpg?.image_url), role: c.role, fav: c.favorites || 0
+    })).sort((x, y) => (x.role === 'Main' ? 0 : 1) - (y.role === 'Main' ? 0 : 1) || y.fav - x.fav || collator.compare(x.name, y.name));
+    chState.list.forEach(c => charSum.set(c.id, { ...charSum.get(c.id), ...c }));
+    renderChars();
   } catch {
-    if (curId === id) box.innerHTML = '<p class="muted" style="grid-column:1/-1">No se pudieron cargar los personajes. <button class="linkbtn" data-retry>Reintentar</button></p>';
+    if (curId === id && $('#mChars')) $('#mChars').innerHTML = '<p class="muted" style="grid-column:1/-1">No se pudieron cargar los personajes. <button class="linkbtn" data-retry>Reintentar</button></p>';
   }
 }
+function renderChars() {
+  const box = $('#mChars'); if (!box) return;
+  const q = norm(chState.q);
+  const list = chState.list.filter(c => (chState.f === 'all' || c.role === 'Main') && (!q || norm(c.name).includes(q)));
+  $('#chCount').textContent = chState.list.length ? `(${nf.format(chState.list.length)})` : '';
+  box.innerHTML = list.length ? list.slice(0, chState.shown).map(charCard).join('')
+    : `<p class="muted" style="grid-column:1/-1">${chState.list.length ? 'Ningún personaje coincide con ese filtro.' : 'Este anime no tiene personajes cargados todavía.'}</p>`;
+  const more = $('#chMore'), left = list.length - chState.shown;
+  more.hidden = left <= 0; more.textContent = `Ver más personajes (${nf.format(Math.max(left, 0))} restantes)`;
+  $$('[data-chf]').forEach(b => b.classList.toggle('act', b.dataset.chf === chState.f));
+}
+mBody.addEventListener('click', e => {
+  const f = e.target.closest('[data-chf]'); if (f) { chState.f = f.dataset.chf; chState.shown = 30; renderChars(); return; }
+  if (e.target.closest('#chMore')) { chState.shown += 30; renderChars(); }
+});
+mBody.addEventListener('input', debounce(e => { if (e.target.id === 'chQ') { chState.q = e.target.value; chState.shown = 30; renderChars(); } }, 150));
 
-/* Traducción (MyMemory, gratuita, con límite diario) */
+/* ================= Traducción al español ================= */
+const GENRES_ES = {
+  'Action':'Acción','Adventure':'Aventura','Avant Garde':'Vanguardia','Award Winning':'Premiado','Boys Love':'Boys Love','Comedy':'Comedia','Drama':'Drama','Fantasy':'Fantasía','Girls Love':'Girls Love','Gourmet':'Gastronomía','Horror':'Terror','Mystery':'Misterio','Romance':'Romance','Sci-Fi':'Ciencia ficción','Slice of Life':'Slice of life','Sports':'Deportes','Supernatural':'Sobrenatural','Suspense':'Suspenso','Ecchi':'Ecchi',
+  'Adult Cast':'Elenco adulto','Anthropomorphic':'Antropomórficos','CGDCT':'Chicas lindas haciendo cosas lindas','Childcare':'Crianza','Combat Sports':'Deportes de combate','Crossdressing':'Travestismo','Delinquents':'Delincuentes','Detective':'Detectives','Educational':'Educativo','Gag Humor':'Humor absurdo','Gore':'Gore','Harem':'Harem','High Stakes Game':'Juegos de alto riesgo','Historical':'Histórico','Idols (Female)':'Ídolos (mujeres)','Idols (Male)':'Ídolos (hombres)','Isekai':'Isekai','Iyashikei':'Iyashikei','Love Polygon':'Polígono amoroso','Magical Sex Shift':'Cambio de sexo mágico','Mahou Shoujo':'Chicas mágicas','Martial Arts':'Artes marciales','Mecha':'Mecha','Medical':'Médico','Military':'Militar','Music':'Música','Mythology':'Mitología','Organized Crime':'Crimen organizado','Otaku Culture':'Cultura otaku','Parody':'Parodia','Performing Arts':'Artes escénicas','Pets':'Mascotas','Psychological':'Psicológico','Racing':'Carreras','Reincarnation':'Reencarnación','Reverse Harem':'Harem inverso','Romantic Subtext':'Subtexto romántico','Samurai':'Samuráis','School':'Escolar','Showbiz':'Mundo del espectáculo','Space':'Espacio','Strategy Game':'Juegos de estrategia','Super Power':'Superpoderes','Survival':'Supervivencia','Team Sports':'Deportes de equipo','Time Travel':'Viajes en el tiempo','Vampire':'Vampiros','Video Game':'Videojuegos','Visual Arts':'Artes visuales','Workplace':'Ambiente laboral','Urban Fantasy':'Fantasía urbana','Villainess':'Villana',
+  'Kids':'Infantil','Seinen':'Seinen','Shoujo':'Shoujo','Shounen':'Shounen','Josei':'Josei'
+};
+const gEs = n => GENRES_ES[n] || n;
+
+const trStore = { c: store.get(LS.trc, {}), f: store.get(LS.tr, {}), h: store.get(LS.trh, {}) };
+const TR_CAP = { c: 700, f: 90, h: 160 };
+let trSaveT;
+function putTr(kind, id, val) {
+  const m = trStore[kind]; delete m[id]; m[id] = val;
+  const ks = Object.keys(m); if (ks.length > TR_CAP[kind]) delete m[ks[0]];
+  clearTimeout(trSaveT);
+  trSaveT = setTimeout(() => { store.set(LS.trc, trStore.c); store.set(LS.tr, trStore.f); store.set(LS.trh, trStore.h); }, 800);
+}
+
 const decode = s => { const t = document.createElement('textarea'); t.innerHTML = s; return t.value; };
-function chunkText(text, max = 450) {
+function chunkText(text, max) {
   const parts = text.split(/(?<=[.!?])\s+/), out = []; let cur = '';
   for (const p0 of parts) {
     let p = p0;
@@ -993,22 +1097,231 @@ function chunkText(text, max = 450) {
   if (cur) out.push(cur);
   return out.filter(Boolean);
 }
-async function translate(id, text) {
-  const out = [];
-  for (const c of chunkText(text.replace(/\n+/g, ' ¶ '))) {
-    const r = await fetch('https://api.mymemory.translated.net/get?q=' + encodeURIComponent(c) + '&langpair=en|es');
-    if (!r.ok) throw new Error('tr');
-    const j = await r.json();
-    const t = j?.responseData?.translatedText || '';
-    if (Number(j.responseStatus) !== 200 || /MYMEMORY WARNING/i.test(t)) throw new Error('tr');
-    out.push(decode(t));
-  }
-  const res = out.join(' ').replace(/\s*¶\s*/g, '\n\n').trim();
-  const tr = store.get(LS.tr, {}); tr[id] = res;
-  const keys = Object.keys(tr); if (keys.length > 80) delete tr[keys[0]];
-  store.set(LS.tr, tr);
-  return res;
+// Proveedor 1: Google Translate (sin clave). Se intenta español latinoamericano (es-419) y, si no lo acepta, "es".
+let trTL = 'es-419';
+async function googleTr(text, tl) {
+  const r = await fetch('https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=' + tl + '&dt=t&q=' + encodeURIComponent(text));
+  if (!r.ok) throw new Error('google ' + r.status);
+  const j = await r.json();
+  const out = (j[0] || []).map(x => x[0]).join('');
+  if (!out) throw new Error('google vacío');
+  return out;
 }
+// Proveedor 2 (respaldo): MyMemory, con límite diario bajo.
+async function myMemory(text) {
+  const r = await fetch('https://api.mymemory.translated.net/get?q=' + encodeURIComponent(text) + '&langpair=en|es');
+  if (!r.ok) throw new Error('mymemory');
+  const j = await r.json(); const t = j?.responseData?.translatedText || '';
+  if (Number(j.responseStatus) !== 200 || /MYMEMORY WARNING/i.test(t)) throw new Error('mymemory');
+  return decode(t);
+}
+async function translateChunk(c) {
+  try { return await googleTr(c, trTL); }
+  catch {
+    if (trTL === 'es-419') { try { const o = await googleTr(c, 'es'); trTL = 'es'; return o; } catch {} }
+    const out = []; for (const p of chunkText(c, 450)) out.push(await myMemory(p));
+    return out.join(' ');
+  }
+}
+let trFails = 0, trOffUntil = 0, trWarned = false;
+async function translateText(text) {
+  if (Date.now() < trOffUntil) throw new Error('traducción en pausa');
+  try {
+    const out = [];
+    for (const c of chunkText(text.replace(/\n+/g, ' ¶ '), 1200)) out.push(await translateChunk(c));
+    trFails = 0;
+    return out.join(' ').replace(/\s*¶\s*/g, '\n\n').trim();
+  } catch (e) {
+    if (++trFails >= 4) {
+      trOffUntil = Date.now() + 5 * 60e3; trFails = 0;
+      if (!trWarned) { trWarned = true; toast('El servicio de traducción no responde. Se muestran los textos originales.'); }
+    }
+    throw e;
+  }
+}
+// cola con 2 traducciones en paralelo
+const trQ = []; let trActive = 0;
+function trEnqueue(job, prio) {
+  return new Promise((res, rej) => { const it = { job, res, rej }; prio ? trQ.unshift(it) : trQ.push(it); trPump(); });
+}
+function trPump() {
+  while (trActive < 2 && trQ.length) {
+    const it = trQ.shift(); trActive++;
+    (async () => {
+      try { it.res(await it.job()); } catch (e) { it.rej(e); }
+      finally { trActive--; await sleep(150); trPump(); }
+    })();
+  }
+}
+// tarjetas: se traducen cuando entran en pantalla
+const cardEn = id => { const a = animeCache.get(id); return a && !a._min ? shortSyn(a.synopsis) : ''; };
+const synObs = new IntersectionObserver(es => {
+  es.forEach(en => { if (en.isIntersecting) { synObs.unobserve(en.target); translateCard(en.target); } });
+}, { rootMargin: '300px' });
+function watchSyns(root) {
+  if (!prefs.es) return;
+  $$('.syn[data-syn]:not([data-tr])', root).forEach(p => {
+    if (trStore.c[+p.dataset.syn]) { p.dataset.tr = '1'; p.textContent = trStore.c[+p.dataset.syn]; return; }
+    synObs.observe(p);
+  });
+}
+async function translateCard(p) {
+  const id = +p.dataset.syn, en = cardEn(id);
+  if (!en || p.dataset.tr || !prefs.es) return;
+  p.dataset.tr = '1';
+  try {
+    const es = await trEnqueue(() => translateText(en));
+    putTr('c', id, es);
+    if (prefs.es) $$(`.syn[data-syn="${id}"]`).forEach(n => { n.textContent = es; n.dataset.tr = '1'; });
+  } catch { delete p.dataset.tr; }
+}
+function applyEs() {
+  $('#esBtn').classList.toggle('act', prefs.es);
+  $('#esBtn').setAttribute('aria-pressed', String(prefs.es));
+  if (prefs.es) { watchSyns(document); return; }
+  $$('.syn[data-syn]').forEach(n => { const e = cardEn(+n.dataset.syn); if (e) n.textContent = e; delete n.dataset.tr; });
+}
+$('#esBtn').addEventListener('click', () => { prefs.es = !prefs.es; savePrefs(); applyEs(); toast(prefs.es ? 'Descripciones en español' : 'Descripciones en el idioma original'); });
+
+/* ================= Ventana del personaje ================= */
+const cm = $('#cmodal'), cBody = $('#cBody');
+let curChar = null;
+function bindTr(textEl, btn, text, kind, id, alive) {
+  let showing = 'en';
+  const set = (lang, t) => { if (!alive()) return; textEl.textContent = t; showing = lang; btn.textContent = lang === 'es' ? 'Ver original en inglés' : 'Traducir al español'; };
+  const go = async manual => {
+    btn.disabled = true; btn.textContent = 'Traduciendo…';
+    try { const es = trStore[kind][id] || await trEnqueue(() => translateText(text), true); putTr(kind, id, es); set('es', es); }
+    catch { if (alive()) { btn.textContent = 'Traducir al español'; if (manual) toast('No se pudo traducir ahora. Probá más tarde.'); } }
+    if (alive()) btn.disabled = false;
+  };
+  btn.hidden = false; btn.onclick = () => { showing === 'es' ? set('en', text) : go(true); };
+  textEl.textContent = text;
+  if (trStore[kind][id]) set('es', trStore[kind][id]);
+  else { btn.textContent = 'Traducir al español'; if (prefs.es) go(false); }
+}
+function openChar(cid) {
+  if (cm.open) return;
+  curChar = cid;
+  history.pushState({ c: cid }, '');
+  document.body.classList.add('lock');
+  cm.showModal();
+  renderChar(charSum.get(cid) || { id: cid, name: '' }, null);
+  fetchChar(cid);
+}
+async function fetchChar(cid) {
+  try {
+    const r = await jikan(`/characters/${cid}/full`, {}, true);
+    if (curChar !== cid) return;
+    renderChar(charSum.get(cid) || { id: cid }, r.data);
+  } catch {
+    if (curChar === cid && $('#cAbout')) $('#cAbout').innerHTML = 'No se pudo cargar la descripción. <button class="linkbtn" id="cRetry">Reintentar</button>';
+  }
+}
+function renderChar(sum, d) {
+  const cid = curChar;
+  const name = fixName(d?.name) || sum.name || '';
+  const img = okImg(d?.images?.jpg?.image_url) || sum.img || '';
+  const fav = d?.favorites ?? sum.fav;
+  const nick = (d?.nicknames || []).slice(0, 6);
+  const langEs = { Japanese: 'Japonés', Spanish: 'Español' };
+  const voices = (d?.voices || []).filter(v => v.language === 'Japanese' || /Spanish/i.test(v.language)).slice(0, 8);
+  const apps = (d?.anime || []).slice(0, 12);
+  cBody.innerHTML = `
+    <button class="mclose" id="cClose" aria-label="Cerrar">✕</button>
+    <div class="cmhead">
+      <div class="cmimg">${img ? `<img src="${esc(img)}" alt="Foto de ${esc(name)}" referrerpolicy="no-referrer">` : ''}</div>
+      <div class="minfo">
+        <h2>${esc(name || 'Cargando…')}</h2>
+        ${d?.name_kanji ? `<p class="jp">${esc(d.name_kanji)}</p>` : ''}
+        <div class="chips">
+          ${fav != null ? `<span class="tag">♥ ${nf.format(fav)} favoritos</span>` : ''}
+          ${sum.role ? `<span class="tag">${roleEs(sum.role)}</span>` : ''}
+          ${nick.map(n => `<span class="tag">“${esc(n)}”</span>`).join('')}
+        </div>
+      </div>
+    </div>
+    <div class="msec"><h4>Descripción</h4><p class="msyn" id="cAbout"></p><button class="linkbtn" id="cTr" hidden></button></div>
+    ${voices.length ? `<div class="msec"><h4>Actores de voz</h4><div class="vagrid">${voices.map(v => `<div class="va">${v.person?.images?.jpg?.image_url ? `<img loading="lazy" referrerpolicy="no-referrer" src="${esc(v.person.images.jpg.image_url)}" alt="">` : ''}<div><b>${esc(fixName(v.person?.name))}</b><span>${esc(langEs[v.language] || v.language)}</span></div></div>`).join('')}</div></div>` : ''}
+    ${apps.length ? `<div class="msec"><h4>Aparece en</h4><div class="chips" style="margin:0">${apps.map(x => `<span class="tag">${esc(x.anime?.title || '')} (${roleEs(x.role)})</span>`).join('')}</div></div>` : ''}
+    ${d?.url ? `<div class="mlinks"><a class="btn ghost sm" href="${esc(d.url)}" target="_blank" rel="noopener">Ver en MyAnimeList</a></div>` : ''}`;
+  const aboutEl = $('#cAbout');
+  if (!d) { aboutEl.textContent = 'Cargando descripción…'; }
+  else {
+    const about = cleanSyn(d.about);
+    if (!about) aboutEl.textContent = 'Este personaje todavía no tiene descripción en la base de datos.';
+    else bindTr(aboutEl, $('#cTr'), about, 'h', cid, () => curChar === cid && cBody.contains(aboutEl));
+  }
+  cBody.scrollTop = 0;
+}
+cBody.addEventListener('click', e => {
+  if (e.target.closest('#cClose')) return cm.close();
+  if (e.target.closest('#cRetry')) { $('#cAbout').textContent = 'Cargando descripción…'; fetchChar(curChar); }
+});
+cm.addEventListener('click', e => { if (e.target === cm) cm.close(); });
+cm.addEventListener('close', () => {
+  curChar = null; if (!modal.open) document.body.classList.remove('lock');
+  if (history.state && history.state.c) { skipPop = true; history.back(); }
+});
+
+/* ================= Pestaña Personajes (todos, A–Z) ================= */
+const cx = { letter: '', q: '', page: 0, next: true, total: null, shown: 0, seen: new Set(), loading: false, gen: 0, error: false, started: false };
+const cxGrid = $('#cxGrid'), cxMsg = $('#cxMsg'), cxMore = $('#cxMore'), cxCount = $('#cxCount');
+function updCx() {
+  if (cx.error || cx.total == null) { cxCount.textContent = ''; return; }
+  if (!cx.q && !cx.letter) { cxCount.textContent = `Los ${nf.format(cx.shown)} personajes más queridos. Elegí una letra para explorar el resto.`; return; }
+  const what = cx.q ? `“${cx.q}”` : `la letra ${cx.letter}`;
+  cxCount.textContent = `${nf.format(cx.total)} personajes para ${what}, mostrando ${nf.format(cx.shown)}`;
+}
+async function loadChars(reset) {
+  if (reset) {
+    cx.gen++; cx.loading = false; cx.page = 0; cx.next = true; cx.total = null; cx.shown = 0; cx.error = false; cx.seen.clear();
+    cxGrid.innerHTML = ''; cxMsg.innerHTML = ''; cxMore.hidden = true; updCx();
+  }
+  if (cx.loading || !cx.next) return;
+  cx.loading = true; cx.error = false; cxMsg.innerHTML = ''; cxMore.hidden = true;
+  const gen = cx.gen;
+  cxGrid.insertAdjacentHTML('beforeend', Array.from({ length: 6 }, () => '<div class="sk ph" style="height:230px"></div>').join(''));
+  try {
+    const params = { page: cx.page + 1, limit: 24, order_by: 'favorites', sort: 'desc' };
+    if (cx.q) params.q = cx.q; else if (cx.letter) params.letter = cx.letter;
+    const r = await jikan('/characters', params, true);
+    if (gen !== cx.gen) return;
+    $$('.sk', cxGrid).forEach(n => n.remove());
+    cx.page++; cx.next = !!r.pagination?.has_next_page && !!(cx.q || cx.letter); cx.total = r.pagination?.items?.total ?? cx.total;
+    const fresh = (r.data || []).filter(c => !cx.seen.has(c.mal_id));
+    fresh.forEach(c => { cx.seen.add(c.mal_id); charSum.set(c.mal_id, { ...charSum.get(c.mal_id), id: c.mal_id, name: fixName(c.name), img: okImg(c.images?.jpg?.image_url), fav: c.favorites || 0 }); });
+    cx.shown += fresh.length;
+    cxGrid.insertAdjacentHTML('beforeend', fresh.map(c => charCard({ ...charSum.get(c.mal_id), role: '' })).join(''));
+    if (!cx.shown) cxMsg.innerHTML = '<div class="msg">No hay personajes con ese filtro. Probá con otra letra.</div>';
+    cxMore.hidden = !cx.next; updCx();
+  } catch (e) {
+    if (gen !== cx.gen) return;
+    $$('.sk', cxGrid).forEach(n => n.remove());
+    cx.error = true;
+    cxMsg.innerHTML = `<div class="msg">No pude cargar los personajes. Puede ser tu conexión o que el servicio de datos esté caído.<br><span class="muted" style="font-size:.82rem">Detalle: ${esc(e.message || e)}</span><br><button class="btn pri sm" id="cxRetry">Reintentar</button></div>`;
+  } finally {
+    if (gen === cx.gen) cx.loading = false;
+  }
+}
+buildLetterBar($('#cxLetters'), 'Destacados', false);
+markActiveLetter($('#cxLetters'), '');
+const resetChars = () => { markActiveLetter($('#cxLetters'), cx.q ? null : cx.letter); loadChars(true); };
+$('#cxLetters').addEventListener('click', e => {
+  const b = e.target.closest('.lbtn'); if (!b) return;
+  cx.letter = b.dataset.l; cx.q = ''; $('#cqIn').value = ''; resetChars();
+});
+const doCharSearch = () => {
+  const q = $('#cqIn').value.trim();
+  if (!q) { if (cx.q) { cx.q = ''; resetChars(); } return; }
+  if (q.length < 3 || q === cx.q) return;
+  cx.q = q; resetChars();
+};
+$('#cqIn').addEventListener('input', debounce(doCharSearch, 500));
+$('#cqIn').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); doCharSearch(); e.target.blur(); } });
+cxMore.addEventListener('click', () => loadChars());
+cxMore.textContent = 'Cargar más personajes';
+cxMsg.addEventListener('click', e => { if (e.target.id === 'cxRetry') loadChars(); });
 
 /* ================= Selector de estado ================= */
 const sheet = $('#sheet'); let sheetId = null;
@@ -1035,9 +1348,83 @@ document.addEventListener('click', e => {
   if (tabBtn) { setTab(tabBtn.dataset.tab); if (tabBtn.tagName !== 'A' && !tabBtn.classList.contains('tab')) $('#app').scrollIntoView(); return; }
   const sb = e.target.closest('.stbtn'); if (sb) { e.stopPropagation(); return openSheet(+sb.dataset.id); }
   const inc = e.target.closest('[data-epinc]'); if (inc) return bumpEp(+inc.dataset.epinc, 1);
+  const ch = e.target.closest('[data-char]'); if (ch) return openChar(+ch.dataset.char);
   const op = e.target.closest('[data-open]'); if (op) return openModal(+op.dataset.open);
   const card = e.target.closest('.card'); if (card && !e.target.closest('a,button')) openModal(+card.dataset.id);
 });
+
+/* ================= Carrusel ================= */
+function initCarousel() {
+  const el = $('#car');
+  if (!el || el.dataset.ready) return;
+  el.dataset.ready = '1';
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let x = 0, lastSet = 0, hover = false, drag = null, moved = false, playing = !reduced, pauseUntil = 0, tw = null, last = performance.now();
+  const half = () => el.scrollWidth / 2;
+  const playBtn = $('#carPlay');
+  const paintPlay = () => { playBtn.textContent = playing ? '⏸' : '▶'; playBtn.setAttribute('aria-label', playing ? 'Pausar el movimiento automático' : 'Reanudar el movimiento automático'); };
+  paintPlay();
+  const bump = (ms = 3500) => { pauseUntil = performance.now() + ms; };
+  const sync = () => { x = el.scrollLeft; lastSet = x; };
+  function wrap() {
+    const h = half(); if (h <= 0) return;
+    if (x >= h) { x -= h; if (tw) { tw.s -= h; tw.e -= h; } }
+    else if (x < 0) { x += h; if (tw) { tw.s += h; tw.e += h; } }
+  }
+  function frame(now) {
+    const dt = Math.min(64, now - last); last = now;
+    let write = false;
+    if (tw) {
+      tw.t += dt; const k = Math.min(1, tw.t / tw.d);
+      x = tw.s + (tw.e - tw.s) * (1 - Math.pow(1 - k, 3));
+      if (k >= 1) tw = null; write = true;
+    } else if (playing && !hover && !drag && now > pauseUntil && !document.hidden) {
+      x += 38 * dt / 1000; write = true;
+    }
+    if (write) { wrap(); el.scrollLeft = x; lastSet = el.scrollLeft; }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+
+  // scroll hecho por el usuario (trackpad, rueda horizontal, touch)
+  el.addEventListener('scroll', () => {
+    if (Math.abs(el.scrollLeft - lastSet) > 2) {
+      tw = null; x = el.scrollLeft; bump();
+      const h = half(); if (h > 0 && x >= h) { x -= h; el.scrollLeft = x; }
+      else if (x <= 0 && h > 0) { x += h; el.scrollLeft = x; }
+      lastSet = el.scrollLeft;
+    }
+  }, { passive: true });
+  el.addEventListener('mouseenter', () => { hover = true; });
+  el.addEventListener('mouseleave', () => { hover = false; sync(); });
+  el.addEventListener('touchstart', () => bump(), { passive: true });
+  el.addEventListener('focusin', () => { hover = true; });
+  el.addEventListener('focusout', () => { hover = false; sync(); });
+
+  // arrastrar con el mouse
+  el.addEventListener('pointerdown', e => {
+    if (e.pointerType !== 'mouse' || e.button !== 0) return;
+    drag = { sx: e.clientX, x0: el.scrollLeft }; moved = false; tw = null;
+  });
+  window.addEventListener('pointermove', e => {
+    if (!drag) return;
+    const dx = e.clientX - drag.sx;
+    if (Math.abs(dx) > 4) { moved = true; el.classList.add('drag'); }
+    if (moved) { x = drag.x0 - dx; wrap(); el.scrollLeft = x; lastSet = el.scrollLeft; }
+  });
+  const endDrag = () => { if (!drag) return; drag = null; el.classList.remove('drag'); bump(); setTimeout(() => { moved = false; }, 0); };
+  window.addEventListener('pointerup', endDrag);
+  window.addEventListener('pointercancel', endDrag);
+  el.addEventListener('click', e => { if (moved) { e.stopPropagation(); e.preventDefault(); } }, true);
+  el.addEventListener('dragstart', e => e.preventDefault());
+
+  // flechas y teclado
+  const go = dir => { sync(); tw = { s: x, e: x + dir * Math.max(260, el.clientWidth * 0.8), t: 0, d: 480 }; bump(5000); };
+  $('#carNext').addEventListener('click', () => go(1));
+  $('#carPrev').addEventListener('click', () => go(-1));
+  el.addEventListener('keydown', e => { if (e.key === 'ArrowRight') { e.preventDefault(); go(1); } else if (e.key === 'ArrowLeft') { e.preventDefault(); go(-1); } });
+  playBtn.addEventListener('click', () => { playing = !playing; sync(); paintPlay(); });
+}
 
 /* ================= Portada con datos reales ================= */
 async function loadShowcase() {
@@ -1048,10 +1435,10 @@ async function loadShowcase() {
   if (tops.length) {
     tops.forEach(a => { if (!animeCache.has(a.mal_id)) animeCache.set(a.mal_id, a); });
     $('#fan').innerHTML = tops.slice(0, 5).map(a => `<button class="fc" data-open="${a.mal_id}" aria-label="${esc(a.title)}"><img src="${esc(imgOf(a))}" alt="" referrerpolicy="no-referrer"></button>`).join('');
-    const row = list => { const h = [...list, ...list].map(a => `<button class="mq" data-open="${a.mal_id}" title="${esc(a.title)}" aria-label="${esc(a.title)}"><img loading="lazy" src="${esc(imgOf(a))}" alt="" referrerpolicy="no-referrer"></button>`).join(''); return `<div class="mq-track">${h}</div><div class="mq-track" aria-hidden="true">${h}</div>`; };
-    $('#mq1').innerHTML = row(tops.slice(0, 13));
-    $('#mq2').innerHTML = row(tops.slice(12, 25));
+    const item = (a, dup) => `<button class="mq" data-open="${a.mal_id}" ${dup ? 'tabindex="-1" aria-hidden="true"' : ''}><div class="im"><img loading="lazy" src="${esc(imgOf(a))}" alt="" referrerpolicy="no-referrer"></div><b>${esc(a.title)}</b></button>`;
+    $('#car').innerHTML = tops.map(a => item(a, false)).join('') + tops.map(a => item(a, true)).join('');
     $('#mqSec').hidden = false;
+    initCarousel();
     $('#vis1').innerHTML = ['A', 'B', 'C', 'D', 'S', 'T'].map(l => `<span class="lb ${l === 'S' ? 'on' : ''}">${l}</span>`).join('');
     $('#vis3').innerHTML = Object.values(STATUS).map(s => `<span class="tag" style="color:${s.color};border-color:${s.color}55">${s.icon} ${s.label}</span>`).join('');
   } else {
@@ -1061,7 +1448,7 @@ async function loadShowcase() {
     chars = await cachedList('top-chars', 12 * 3600e3, async () => (await jikan('/top/characters', { limit: 15 })).data.filter(c => c.images?.jpg?.image_url && !/questionmark/.test(c.images.jpg.image_url)).map(c => ({ id: c.mal_id, name: c.name, img: c.images.jpg.image_url, fav: c.favorites })));
   } catch {}
   if (chars.length) {
-    $('#topChars').innerHTML = chars.map(c => `<figure class="chr" style="margin:0"><div class="im"><img loading="lazy" referrerpolicy="no-referrer" src="${esc(c.img)}" alt=""></div><b>${esc(fixName(c.name))}</b><span>♥ ${nf.format(c.fav || 0)}</span></figure>`).join('');
+    $('#topChars').innerHTML = chars.map(c => { charSum.set(c.id, { ...charSum.get(c.id), id: c.id, name: fixName(c.name), img: c.img, fav: c.fav || 0 }); return `<button class="chr" data-char="${c.id}"><div class="im"><img loading="lazy" referrerpolicy="no-referrer" src="${esc(c.img)}" alt=""></div><b>${esc(fixName(c.name))}</b><span>♥ ${nf.format(c.fav || 0)}</span></button>`; }).join('');
     $('#vis2').innerHTML = chars.slice(0, 4).map(c => `<span class="av"><img src="${esc(c.img)}" alt="" referrerpolicy="no-referrer"></span>`).join('');
   } else {
     $('#topChars').innerHTML = '<p class="muted">No se pudieron cargar los personajes ahora. Recargá en unos segundos.</p>';
@@ -1081,10 +1468,11 @@ $('#installBtn').addEventListener('click', async () => {
 if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(() => {});
 
 /* ================= Arranque ================= */
-buildLetterBar($('#exLetters'), true, false);
+buildLetterBar($('#exLetters'), 'Destacados', false);
 $('#typeSel').value = ex.type;
 $('#orderSel').value = ex.order;
 applyView();
+applyEs();
 updateCounts();
 markActiveLetter($('#exLetters'), ex.letter);
 loadMore(true);

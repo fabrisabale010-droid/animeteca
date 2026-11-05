@@ -1,6 +1,6 @@
 // Service worker mínimo: cachea el "cascarón" de la app para abrirla offline.
 // Las llamadas a la API (Jikan) nunca se interceptan: la app maneja su propio caché.
-const CACHE = 'animeteca-shell-v1';
+const CACHE = 'animeteca-shell-v2';
 const SHELL = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', e => {
@@ -21,6 +21,17 @@ self.addEventListener('fetch', e => {
   const url = new URL(req.url);
   // Solo recursos del propio sitio: stale-while-revalidate
   if (url.origin !== location.origin) return;
+  // La página principal: primero red (así siempre ves la versión nueva), caché si no hay conexión
+  if (req.mode === 'navigate') {
+    e.respondWith(
+      fetch(req).then(res => {
+        const copy = res.clone();
+        caches.open(CACHE).then(c => c.put('./index.html', copy));
+        return res;
+      }).catch(() => caches.match('./index.html'))
+    );
+    return;
+  }
   e.respondWith(
     caches.open(CACHE).then(async cache => {
       const cached = await cache.match(req, { ignoreSearch: true });
