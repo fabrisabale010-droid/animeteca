@@ -6,6 +6,10 @@
 <title>Animeteca — anime de la A a la Z</title>
 <meta name="description" content="Catálogo de anime con descripción, personajes y un índice alfabético para marcar lo que estás viendo.">
 <meta name="theme-color" content="#07080d">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Animeteca">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -49,6 +53,21 @@ a{color:inherit}
 .btn.ghost:hover{background:rgba(255,255,255,.07)}
 .btn.sm{padding:8px 16px;font-size:.9rem}
 .pill-n{display:inline-block;min-width:22px;padding:1px 7px;border-radius:999px;background:rgba(255,255,255,.14);font-size:.78rem;text-align:center}
+
+.ibar{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:10px 14px;padding:10px 16px;background:linear-gradient(90deg,rgba(123,97,255,.28),rgba(60,211,255,.2));border-bottom:1px solid var(--line);font-size:.92rem;text-align:center}
+.ibar .ibx{width:32px;height:32px;border-radius:50%;border:1px solid var(--line2);font-size:.9rem;color:var(--soft)}
+
+.iconbtn{width:40px;height:40px;border-radius:50%;border:1px solid var(--line2);display:grid;place-items:center;background:var(--s1);color:var(--soft)}
+.iconbtn:hover{color:#fff;border-color:var(--cyan)}
+.iconbtn[data-locked=true]{border-color:rgba(255,93,115,.7);color:var(--bad)}
+.lockbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;padding:12px 16px;border:1px solid rgba(255,93,115,.45);border-radius:14px;background:var(--s1);margin-bottom:12px;font-size:.92rem;color:var(--soft)}
+.secbox{border:1px solid var(--line);border-radius:14px;background:var(--s1);margin-bottom:14px}
+.secbox summary{cursor:pointer;padding:12px 16px;font-weight:700;list-style:none;display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px 12px}
+.secbox summary::-webkit-details-marker{display:none}
+.secbox summary span{color:var(--mut);font-weight:500;font-size:.88rem}
+.secin{padding:0 16px 16px;color:var(--soft);font-size:.9rem;max-width:70ch}
+.secin .tools{margin:12px 0 0}
+.askin{width:100%;text-align:center;font-size:1.3rem}
 
 /* ---------- Hero ---------- */
 .hero{position:relative;padding:64px 0 36px;overflow:hidden;isolation:isolate}
@@ -314,10 +333,17 @@ dialog.sheet{width:min(420px,100% - 24px);max-width:none;margin:auto;padding:0;b
     </nav>
     <div class="hact">
       <button class="btn ghost sm" id="installBtn" hidden>Instalar app</button>
+      <button class="iconbtn" id="lockBtn" hidden></button>
       <a class="btn pri sm" href="#app" data-tab="mine">Mi lista <span class="pill-n" id="navCount">0</span></a>
     </div>
   </div>
 </header>
+
+<div class="ibar" id="installBar" hidden>
+  <span>Instalá la app para usarla a pantalla completa, sin la barra de dirección.</span>
+  <button class="btn pri sm" id="installBtn2">Instalar app</button>
+  <button class="ibx" id="installX" aria-label="Ocultar este aviso">✕</button>
+</div>
 
 <main id="top">
 <section class="hero">
@@ -414,6 +440,22 @@ dialog.sheet{width:min(420px,100% - 24px);max-width:none;margin:auto;padding:0;b
 
     <!-- MI LISTA -->
     <div id="pMine" hidden>
+      <div class="lockbar" id="lockBar" hidden>
+        <span>Tu lista está protegida: se puede ver, pero para modificarla hace falta el PIN.</span>
+        <button class="btn pri sm" id="lockUnlock">Desbloquear</button>
+      </div>
+      <details class="secbox" id="secBox">
+        <summary>Seguridad de tu lista <span id="secState">Sin PIN</span></summary>
+        <div class="secin">
+          <p id="secTx"></p>
+          <div class="tools">
+            <button class="btn ghost sm" id="pinSet">Crear PIN</button>
+            <button class="btn ghost sm" id="pinChange" hidden>Cambiar PIN</button>
+            <button class="btn ghost sm" id="pinRemove" hidden>Quitar PIN</button>
+            <button class="btn ghost sm" id="pinForgot" hidden>Olvidé mi PIN</button>
+          </div>
+        </div>
+      </details>
       <div class="sumrow" id="myChips"></div>
       <div class="sumrow">
         <div class="prog" aria-hidden="true"><b id="myBar" style="width:0%"></b></div>
@@ -475,11 +517,12 @@ dialog.sheet{width:min(420px,100% - 24px);max-width:none;margin:auto;padding:0;b
     <div class="sec-h"><h2>Preguntas frecuentes</h2></div>
     <div class="faq">
       <details><summary>¿De dónde salen los anime y las imágenes?</summary><p>De MyAnimeList, a través de las APIs gratuitas Tenrai y Jikan. No hace falta cuenta ni clave, y el catálogo se actualiza solo.</p></details>
+      <details><summary>¿Cómo protejo mi lista con un PIN?</summary><p>En Mi lista abrí “Seguridad de tu lista” y creá un PIN de 4 a 6 números. Desde ese momento la lista se puede ver pero no modificar: marcar, quitar, sumar episodios o importar piden el PIN. Se vuelve a bloquear al abrir la app, tras 5 minutos sin usarla y al volver de estar un rato en segundo plano. Después de 5 intentos fallidos se bloquea unos minutos. Es una protección para que nadie toque tu lista desde tu dispositivo; no reemplaza una cuenta, así que hacé copias con “Exportar copia”.</p></details>
       <details><summary>¿Dónde se guardan mis marcas?</summary><p>En este dispositivo, dentro del navegador. Para pasarlas a otro dispositivo o hacer una copia de seguridad, usá “Exportar copia” en Mi lista e “Importar copia” en el otro.</p></details>
       <details><summary>¿Por qué el índice usa nombres en japonés?</summary><p>Las letras se arman con el título original en romaji. Si buscás “Attack on Titan”, usá el buscador: encuentra también los nombres en inglés.</p></details>
       <details><summary>¿Están todos los personajes?</summary><p>Cada ficha lista todos los personajes que MyAnimeList tiene cargados para ese anime, con buscador y filtro de principales. Además, en la pestaña Personajes podés recorrerlos a todos por letra o buscándolos por nombre. Si un personaje no tiene foto o descripción, es porque falta en la base de datos.</p></details>
       <details><summary>¿Las descripciones están en español?</summary><p>Vienen en inglés desde MyAnimeList y la app las traduce sola al español latino, usando Google Translate y MyMemory de respaldo. Las traducciones se guardan en tu dispositivo. Si el servicio falla, ves el original. Con el botón “Descripciones en español” podés apagar o prender la traducción, y en cada ficha podés ver el texto original.</p></details>
-      <details><summary>¿Cómo la instalo en el celular?</summary><p>Desde Chrome en Android, tocá el botón “Instalar app” o el menú ⋮ y elegí “Instalar app” / “Agregar a la pantalla principal”.</p></details>
+      <details><summary>¿Cómo la instalo en el celular?</summary><p>En Chrome para Android, tocá el aviso “Instalar app” que aparece arriba, o el menú ⋮ y elegí <b>“Instalar app”</b>. Ojo: “Agregar a la pantalla de inicio” puede crear solo un acceso directo que abre con la barra de dirección. Si te pasó, borrá ese ícono, recargá la página y volvé a instalar con “Instalar app”.</p></details>
       <details><summary>Dice que no pudo cargar. ¿Qué hago?</summary><p>Los datos vienen de servicios gratuitos (Tenrai, con Jikan de respaldo) que a veces se saturan o se caen. Esperá unos segundos y tocá “Reintentar”. Tu lista guardada se ve igual aunque no haya conexión.</p></details>
     </div>
   </div>
@@ -516,6 +559,20 @@ dialog.sheet{width:min(420px,100% - 24px);max-width:none;margin:auto;padding:0;b
   </div>
 </dialog>
 
+<!-- Pedido de PIN / confirmaciones -->
+<dialog class="sheet" id="askDlg" aria-labelledby="askT">
+  <div class="shin">
+    <p class="sh-t" id="askT"></p>
+    <p class="muted" id="askM" style="font-size:.9rem;margin-bottom:12px"></p>
+    <input class="inp askin" id="askIn" autocomplete="off" autocapitalize="off" spellcheck="false">
+    <p id="askE" style="color:var(--bad);font-size:.85rem;min-height:1.3em;margin-top:6px" role="alert"></p>
+    <div style="display:flex;gap:8px;margin-top:8px">
+      <button class="btn ghost" id="askNo" style="flex:1">Cancelar</button>
+      <button class="btn pri" id="askOk" style="flex:1">Aceptar</button>
+    </div>
+  </div>
+</dialog>
+
 <div id="toast" class="toast" popover="manual" role="status"></div>
 
 <script>
@@ -541,7 +598,7 @@ const store = {
   get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } },
   set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch { return false; } }
 };
-const LS = { lib: 'animeteca.lib.v1', prefs: 'animeteca.prefs.v1', cache: 'animeteca.cache.v1', tr: 'animeteca.tr.v1', trc: 'animeteca.trc.v1', trh: 'animeteca.trh.v1' };
+const LS = { lib: 'animeteca.lib.v1', prefs: 'animeteca.prefs.v1', cache: 'animeteca.cache.v1', tr: 'animeteca.tr.v1', trc: 'animeteca.trc.v1', trh: 'animeteca.trh.v1', sec: 'animeteca.sec.v1' };
 
 const STATUS = {
   watching: { label: 'Viendo',     icon: '▶', color: '#3cd3ff' },
@@ -652,13 +709,16 @@ function setStatus(a, st) {
   saveLib();
   refreshStatusUI(id);
 }
-function applyStatus(id, st) {
+async function applyStatus(id, st) {
   const src = animeCache.get(id) || lib[id];
   if (!src) return;
+  if (!(await guard())) return;
   setStatus(src, st);
   toast(st ? `Marcado como “${STATUS[st].label}”` : 'Quitado de tu lista');
 }
-function bumpEp(id, d) {
+async function bumpEp(id, d) {
+  if (!lib[id]) return;
+  if (!(await guard())) return;
   const it = lib[id]; if (!it) return;
   let ep = Math.max(0, (it.ep || 0) + d);
   if (it.eps && ep >= it.eps) { ep = it.eps; it.st = 'done'; toast('¡Terminaste! Pasó a “Visto”'); }
@@ -887,6 +947,7 @@ $('#expBtn').addEventListener('click', () => {
 $('#impFile').addEventListener('change', async e => {
   const f = e.target.files[0]; e.target.value = '';
   if (!f) return;
+  if (!(await guard())) return;
   try {
     const j = JSON.parse(await f.text());
     const src = Array.isArray(j) ? j : Object.values(j.items || {});
@@ -1325,9 +1386,10 @@ cxMsg.addEventListener('click', e => { if (e.target.id === 'cxRetry') loadChars(
 
 /* ================= Selector de estado ================= */
 const sheet = $('#sheet'); let sheetId = null;
-function openSheet(id) {
+async function openSheet(id) {
   const src = lib[id] || (animeCache.get(id) && toItem(animeCache.get(id)));
   if (!src) return;
+  if (!(await guard())) return;
   sheetId = id; $('#shTitle').textContent = src.t;
   renderSheet(); sheet.showModal();
 }
@@ -1340,6 +1402,121 @@ sheet.addEventListener('click', e => {
   if (e.target === sheet || e.target.id === 'shClose') return sheet.close();
   const b = e.target.closest('[data-set]');
   if (b) { applyStatus(sheetId, b.dataset.set || null); sheet.close(); }
+});
+
+/* ================= Seguridad: PIN ================= */
+let sec = store.get(LS.sec, null);            // { salt, hash, iter, tries, until, lvl }
+const pinSet = () => !!(sec && sec.hash);
+let unlocked = false, idleT = null, hiddenAt = 0;
+const IDLE_MS = 5 * 60e3;
+const PIN_OK = v => /^\d{4,6}$/.test(v);
+const saveSec = () => { try { sec ? localStorage.setItem(LS.sec, JSON.stringify(sec)) : localStorage.removeItem(LS.sec); } catch {} };
+const b64 = u8 => btoa(String.fromCharCode(...u8));
+const unb64 = t => Uint8Array.from(atob(t), c => c.charCodeAt(0));
+async function derive(pin, salt, iter) {
+  if (!(window.crypto && crypto.subtle)) throw new Error('nocrypto');
+  const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(pin), 'PBKDF2', false, ['deriveBits']);
+  const bits = await crypto.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt, iterations: iter }, key, 256);
+  return b64(new Uint8Array(bits));
+}
+async function makeSec(pin) {
+  const salt = crypto.getRandomValues(new Uint8Array(16)), iter = 150000;
+  return { salt: b64(salt), iter, hash: await derive(pin, salt, iter), tries: 0, until: 0, lvl: 0 };
+}
+async function checkPin(pin) { try { return (await derive(pin, unb64(sec.salt), sec.iter)) === sec.hash; } catch { return false; } }
+const fmtWait = ms => ms < 60e3 ? `${Math.ceil(ms / 1000)} segundos` : `${Math.ceil(ms / 60e3)} minutos`;
+
+// ventana genérica para pedir un dato
+function askInput({ title, msg = '', type = 'password', inputmode = 'numeric', maxlength = 6, validate, invalid = '', err = '', label = 'Aceptar' }) {
+  return new Promise(res => {
+    const d = $('#askDlg'), inp = $('#askIn'), ok = $('#askOk'), no = $('#askNo');
+    $('#askT').textContent = title; $('#askM').textContent = msg; $('#askE').textContent = err; ok.textContent = label;
+    inp.type = type; inp.inputMode = inputmode; inp.maxLength = maxlength; inp.value = '';
+    inp.style.letterSpacing = type === 'password' ? '.4em' : 'normal';
+    let done = false;
+    const finish = v => { if (done) return; done = true; ok.onclick = no.onclick = inp.onkeydown = null; d.removeEventListener('close', onClose); if (d.open) d.close(); res(v); };
+    // el evento 'close' de una ventana anterior puede llegar tarde: se ignora si la ventana ya se volvió a abrir
+    const onClose = () => { if (!d.open) finish(null); };
+    const submit = () => { const v = inp.value.trim(); if (validate && !validate(v)) { $('#askE').textContent = invalid; return; } finish(v); };
+    ok.onclick = submit; no.onclick = () => finish(null);
+    inp.onkeydown = e => { if (e.key === 'Enter') { e.preventDefault(); submit(); } };
+    d.addEventListener('close', onClose);
+    d.showModal(); inp.focus();
+  });
+}
+async function verifyPin(msg) {
+  let err = '';
+  while (true) {
+    const wait = (sec.until || 0) - Date.now();
+    if (wait > 0) { toast(`Demasiados intentos. Probá de nuevo en ${fmtWait(wait)}.`); return false; }
+    const pin = await askInput({ title: 'Ingresá tu PIN', msg, err, invalid: 'El PIN tiene entre 4 y 6 números.', validate: PIN_OK });
+    if (pin === null) return false;
+    if (await checkPin(pin)) { sec.tries = 0; sec.lvl = 0; sec.until = 0; saveSec(); return true; }
+    sec.tries = (sec.tries || 0) + 1;
+    if (sec.tries >= 5) {
+      const steps = [30e3, 60e3, 300e3, 900e3];
+      sec.until = Date.now() + steps[Math.min(sec.lvl || 0, 3)]; sec.lvl = (sec.lvl || 0) + 1; sec.tries = 0; saveSec();
+      toast('Demasiados intentos. Esperá un momento y probá de nuevo.'); return false;
+    }
+    saveSec(); err = `PIN incorrecto. Te quedan ${5 - sec.tries} intentos.`;
+  }
+}
+function armIdle() { clearTimeout(idleT); if (pinSet() && unlocked) idleT = setTimeout(() => lockNow(true), IDLE_MS); }
+function unlockNow() { unlocked = true; armIdle(); updateSecUI(); }
+function lockNow(auto) { unlocked = false; clearTimeout(idleT); updateSecUI(); if (auto) toast('Tu lista se bloqueó por inactividad'); }
+async function guard() {
+  if (!pinSet()) return true;
+  if (unlocked) { armIdle(); return true; }
+  const ok = await verifyPin('Para modificar tu lista necesitás tu PIN.');
+  if (ok) unlockNow();
+  return ok;
+}
+async function createPin() {
+  const a = await askInput({ title: 'Creá tu PIN', msg: 'De 4 a 6 números. Lo vas a necesitar para modificar tu lista.', invalid: 'Usá de 4 a 6 números.', validate: PIN_OK, label: 'Siguiente' });
+  if (a === null) return false;
+  const b = await askInput({ title: 'Repetí el PIN', msg: 'Escribilo otra vez para confirmar.', invalid: 'Usá de 4 a 6 números.', validate: PIN_OK, label: 'Guardar' });
+  if (b === null) return false;
+  if (a !== b) { toast('Los PIN no coinciden. Probá de nuevo.'); return false; }
+  try { sec = await makeSec(a); } catch { sec = null; toast('Este navegador no permite crear un PIN seguro (hace falta https).'); return false; }
+  saveSec(); unlockNow(); toast('PIN creado. Tu lista quedó protegida.'); return true;
+}
+async function changePin() {
+  if (!(await verifyPin('Ingresá tu PIN actual.'))) return;
+  const old = sec;
+  if (!(await createPin())) { sec = old; saveSec(); updateSecUI(); }
+}
+async function removePin() {
+  if (!(await verifyPin('Ingresá tu PIN para quitar la protección.'))) return;
+  sec = null; saveSec(); unlocked = false; clearTimeout(idleT); updateSecUI(); toast('PIN eliminado. Tu lista ya no está protegida.');
+}
+async function forgotPin() {
+  const t = await askInput({ title: 'Olvidé mi PIN', msg: 'Sin el PIN, la única salida es borrar el PIN y toda tu lista de este dispositivo. Después podés importar una copia exportada. Para confirmar, escribí BORRAR.', type: 'text', inputmode: 'text', maxlength: 10, invalid: 'Escribí BORRAR para confirmar.', validate: v => v.toUpperCase() === 'BORRAR', label: 'Borrar todo' });
+  if (t === null) return;
+  lib = {}; saveLib(); sec = null; saveSec(); unlocked = false; clearTimeout(idleT);
+  updateSecUI(); renderMine(); toast('Se borraron el PIN y la lista.');
+}
+const LOCK_SVG = { closed: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>', open: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 7.5-1.5"/></svg>' };
+function updateSecUI() {
+  const has = pinSet(), locked = has && !unlocked;
+  const lb = $('#lockBtn');
+  lb.hidden = !has; lb.innerHTML = locked ? LOCK_SVG.closed : LOCK_SVG.open; lb.dataset.locked = String(locked);
+  lb.setAttribute('aria-label', locked ? 'Lista bloqueada, tocá para desbloquear' : 'Lista desbloqueada, tocá para bloquear'); lb.title = lb.getAttribute('aria-label');
+  $('#secState').textContent = has ? (locked ? 'PIN activo, lista bloqueada' : 'PIN activo, lista desbloqueada') : 'Sin PIN';
+  $('#pinSet').hidden = has; $('#pinChange').hidden = !has; $('#pinRemove').hidden = !has; $('#pinForgot').hidden = !has;
+  $('#secTx').textContent = has
+    ? 'Tu lista se puede ver, pero para marcar, quitar, sumar episodios o importar hace falta el PIN. Se vuelve a bloquear al abrir la app y tras 5 minutos sin usarla.'
+    : 'Creá un PIN de 4 a 6 números para que nadie pueda modificar tu lista. Sin el PIN, se puede ver pero no tocar. Recordá hacer una copia con “Exportar copia”.';
+  $('#lockBar').hidden = !locked;
+}
+$('#pinSet').addEventListener('click', createPin);
+$('#pinChange').addEventListener('click', changePin);
+$('#pinRemove').addEventListener('click', removePin);
+$('#pinForgot').addEventListener('click', forgotPin);
+$('#lockUnlock').addEventListener('click', () => guard());
+$('#lockBtn').addEventListener('click', () => { unlocked ? lockNow() : guard(); });
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) hiddenAt = Date.now();
+  else if (pinSet() && unlocked && hiddenAt && Date.now() - hiddenAt > 60e3) lockNow(true);
 });
 
 /* ================= Clicks globales ================= */
@@ -1461,10 +1638,25 @@ async function loadShowcase() {
 
 /* ================= PWA ================= */
 let deferred = null;
-window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferred = e; $('#installBtn').hidden = false; });
-$('#installBtn').addEventListener('click', async () => {
-  if (!deferred) return; deferred.prompt(); await deferred.userChoice.catch(() => {}); deferred = null; $('#installBtn').hidden = true;
+const isStandalone = () => matchMedia('(display-mode: standalone)').matches || matchMedia('(display-mode: fullscreen)').matches || navigator.standalone === true;
+const hideInstall = () => { $('#installBtn').hidden = true; $('#installBar').hidden = true; };
+async function doInstall() {
+  if (!deferred) return;
+  deferred.prompt();
+  await deferred.userChoice.catch(() => {});
+  deferred = null; hideInstall();
+}
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault(); deferred = e;
+  if (isStandalone()) return;
+  $('#installBtn').hidden = false;
+  const dismissed = store.get('animeteca.noinst', 0);
+  if (Date.now() - dismissed > 7 * 864e5) $('#installBar').hidden = false;
 });
+window.addEventListener('appinstalled', () => { deferred = null; hideInstall(); toast('App instalada'); });
+$('#installBtn').addEventListener('click', doInstall);
+$('#installBtn2').addEventListener('click', doInstall);
+$('#installX').addEventListener('click', () => { store.set('animeteca.noinst', Date.now()); $('#installBar').hidden = true; });
 if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(() => {});
 
 /* ================= Arranque ================= */
@@ -1473,6 +1665,7 @@ $('#typeSel').value = ex.type;
 $('#orderSel').value = ex.order;
 applyView();
 applyEs();
+updateSecUI();
 updateCounts();
 markActiveLetter($('#exLetters'), ex.letter);
 loadMore(true);
