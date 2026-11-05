@@ -77,6 +77,17 @@ pre.rules{margin:8px 0;padding:12px;border-radius:12px;background:var(--bg);bord
 .secin .okline{color:var(--ok)}
 .secin .errline{color:var(--bad)}
 
+.card.pend{display:none}
+.meta .sb{color:var(--cyan);font-weight:700}
+.seasrow{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 14px;border:1px solid var(--line);border-radius:12px;background:var(--s2)}
+.seasrow.cur{border-color:var(--cyan)}
+.seasrow div{min-width:0}
+.seasrow b{display:block;font-size:.9rem}
+.seasrow span{display:block;font-size:.82rem;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.seasrow em{font-style:normal;font-size:.82rem;color:var(--soft);white-space:nowrap}
+.seaslist{display:grid;gap:8px;margin-top:10px}
+.seassum{color:var(--soft);font-size:.95rem}
+
 /* ---------- Hero ---------- */
 .hero{position:relative;padding:64px 0 36px;overflow:hidden;isolation:isolate}
 .hero::before{content:"";position:absolute;inset:-10% -10% auto;height:130%;z-index:-2;background:radial-gradient(620px 380px at 78% 32%,rgba(123,97,255,.38),transparent 70%),radial-gradient(520px 320px at 12% 8%,rgba(60,211,255,.16),transparent 70%)}
@@ -426,7 +437,7 @@ dialog.sheet{width:min(420px,100% - 24px);max-width:none;margin:auto;padding:0;b
         </div>
       </div>
       <div class="lbar" id="exLetters" aria-label="Índice alfabético"></div>
-      <p class="hint">Arrancás con los más relevantes. Elegí una letra para ver el resto, ordenado por popularidad. El índice usa el título original en romaji (por ejemplo, “Shingeki no Kyojin” está en la S); para otros nombres, usá el buscador.</p>
+      <p class="hint">Arrancás con los más relevantes. Cada anime aparece una sola vez, con la cantidad de temporadas. Elegí una letra para ver el resto, ordenado por popularidad. El índice usa el título original en romaji (por ejemplo, “Shingeki no Kyojin” está en la S); para otros nombres, usá el buscador.</p>
       <p class="count" id="exCount" aria-live="polite"></p>
       <div class="grid" id="exGrid"></div>
       <div id="exMsg"></div>
@@ -533,6 +544,7 @@ dialog.sheet{width:min(420px,100% - 24px);max-width:none;margin:auto;padding:0;b
       <details><summary>¿Dónde se guardan mis marcas?</summary><p>Por defecto, en este dispositivo, dentro del navegador. Si borrás los datos del sitio, se pierden. Para evitarlo podés activar la sincronización en la nube (Mi lista → “Sincronización en la nube”), que la guarda en tu cuenta y la comparte entre tus dispositivos, o hacer copias con “Exportar copia” e “Importar copia”.</p></details>
       <details><summary>¿Cómo sincronizo mi lista entre el celular y la compu?</summary><p>Con la sincronización en la nube: configurás tu proyecto de Firebase una sola vez (gratis), iniciás sesión con la misma cuenta en cada dispositivo y los cambios aparecen en todos. Funciona sin conexión: lo que marques se sube cuando vuelva internet. Si dos dispositivos cambian el mismo anime, gana el cambio más reciente.</p></details>
       <details><summary>¿Por qué el índice usa nombres en japonés?</summary><p>Las letras se arman con el título original en romaji. Si buscás “Attack on Titan”, usá el buscador: encuentra también los nombres en inglés.</p></details>
+      <details><summary>¿Por qué no aparecen las temporadas por separado?</summary><p>Cada anime se muestra una sola vez y en la ficha ves cuántas temporadas tiene, con los años y episodios de cada una, y las películas u OVAs que lo acompañan. Se calcula con las relaciones de precuela y secuela de MyAnimeList, así que las primeras veces puede tardar unos segundos y después queda guardado. Si marcás un anime como visto o viendo, el contador de episodios usa el total de todas las temporadas.</p></details>
       <details><summary>¿Están todos los personajes?</summary><p>Cada ficha lista todos los personajes que MyAnimeList tiene cargados para ese anime, con buscador y filtro de principales. Además, en la pestaña Personajes podés recorrerlos a todos por letra o buscándolos por nombre. Si un personaje no tiene foto o descripción, es porque falta en la base de datos.</p></details>
       <details><summary>¿Las descripciones están en español?</summary><p>Vienen en inglés desde MyAnimeList y la app las traduce sola al español latino, usando Google Translate y MyMemory de respaldo. Las traducciones se guardan en tu dispositivo. Si el servicio falla, ves el original. Con el botón “Descripciones en español” podés apagar o prender la traducción, y en cada ficha podés ver el texto original.</p></details>
       <details><summary>¿Cómo la instalo en el celular?</summary><p>En Chrome para Android, tocá el aviso “Instalar app” que aparece arriba, o el menú ⋮ y elegí <b>“Instalar app”</b>. Ojo: “Agregar a la pantalla de inicio” puede crear solo un acceso directo que abre con la barra de dirección. Si te pasó, borrá ese ícono, recargá la página y volvé a instalar con “Instalar app”.</p></details>
@@ -729,6 +741,92 @@ async function cachedList(key, ttl, fetcher) {
   } catch (err) { if (e) return e.d; throw err; }
 }
 
+/* ================= Unificar temporadas (franquicias) ================= */
+// MyAnimeList guarda cada temporada como un anime distinto. Con las relaciones "Precuela" y "Secuela"
+// se arma la franquicia: se muestra solo la primera entrada y se informa cuántas temporadas tiene.
+const FRK = 'animeteca.fr.v1';
+const K = id => 'i' + id;                       // claves con prefijo para conservar el orden de inserción
+const frs = Object.assign({ rel: {}, node: {}, fr: {}, root: {} }, store.get(FRK, {}));
+const FR_CAP = { rel: 3000, node: 3000, fr: 800, root: 5000 };
+let frT, frDirty = false;
+function flushFr() {
+  clearTimeout(frT);
+  if (!frDirty) return;
+  frDirty = false;
+  for (const k in FR_CAP) { const ks = Object.keys(frs[k]); if (ks.length > FR_CAP[k]) ks.slice(0, ks.length - FR_CAP[k]).forEach(x => delete frs[k][x]); }
+  if (!store.set(FRK, frs)) { frs.rel = {}; frs.node = {}; store.set(FRK, frs); }
+}
+function saveFr() { frDirty = true; clearTimeout(frT); frT = setTimeout(flushFr, 1500); }
+const SEQ_RE = /(\bseason\s*\d+|\b\d+(st|nd|rd|th)\s+season|\b(second|third|fourth|fifth|sixth)\s+season|\bfinal\s+season|\bpart\s*\d+|\bcour\s*\d+|\s(ii|iii|iv)$)/i;
+const isSeasonNode = n => n.type === 'TV' || (n.type === 'ONA' && (n.eps || 0) >= 5);
+const isMainType = t => t === 'TV' || t === 'Movie' || t === 'ONA';
+
+async function getRel(id, prio) {
+  const c = frs.rel[K(id)]; if (c) return c;
+  const r = await jikan(`/anime/${id}/relations`, {}, prio);
+  let p = 0; const s = [];
+  (Array.isArray(r.data) ? r.data : []).forEach(g => (g.entry || []).forEach(e => {
+    if (e.type !== 'anime' || !e.mal_id) return;
+    if (g.relation === 'Prequel') { if (!p) p = e.mal_id; }
+    else if (g.relation === 'Sequel') s.push(e.mal_id);
+  }));
+  frs.rel[K(id)] = { p, s }; saveFr();
+  return frs.rel[K(id)];
+}
+async function getNode(id, prio) {
+  const c = frs.node[K(id)]; if (c) return c;
+  let a = animeCache.get(id);
+  if (!a || a.type === undefined) { a = (await jikan('/anime/' + id, {}, prio)).data; animeCache.set(id, a); }
+  const n = { t: a.title || a.title_english || '', type: a.type || '', eps: a.episodes || 0, y: a.year || a.aired?.prop?.from?.year || 0 };
+  frs.node[K(id)] = n; saveFr();
+  return n;
+}
+// Precuela "principal" (serie, película u ONA). Si la precuela es un OVA o especial, no cuenta como secuela.
+async function mainPrev(id, prio) {
+  const rel = await getRel(id, prio);
+  if (!rel.p) return 0;
+  const n = await getNode(rel.p, prio);
+  return isMainType(n.type) ? rel.p : 0;
+}
+function mainPrevCached(id) {
+  const rel = frs.rel[K(id)]; if (!rel) return undefined;
+  if (!rel.p) return 0;
+  const n = frs.node[K(rel.p)]; if (!n) return undefined;
+  return isMainType(n.type) ? rel.p : 0;
+}
+function frView(id) { const root = frs.root[K(id)]; const f = root && frs.fr[K(root)]; return f ? { root, ...f } : null; }
+const frFor = id => frView(id);
+const frBusy = new Map();
+function getFranchise(id, prio) {
+  if (frView(id)) return Promise.resolve(frView(id));
+  if (frBusy.has(id)) return frBusy.get(id);
+  const p = (async () => {
+    let root = id; const back = new Set([id]);
+    for (let g = 0; g < 12; g++) { const mp = await mainPrev(root, prio); if (!mp || back.has(mp)) break; root = mp; back.add(mp); }
+    if (!frs.fr[K(root)]) {
+      const order = [], seen = new Set(), q = [root]; let capped = false;
+      while (q.length) {
+        if (order.length >= 25) { capped = true; break; }
+        const cur = q.shift(); if (seen.has(cur)) continue; seen.add(cur);
+        const rel = await getRel(cur, prio); order.push(cur);
+        rel.s.forEach(x => { if (!seen.has(x)) q.push(x); });
+      }
+      const det = [];
+      for (let i = 0; i < order.length; i++) det.push({ id: order[i], i, ...(await getNode(order[i], prio)) });
+      det.sort((a, b) => ((a.y || 9999) - (b.y || 9999)) || (a.i - b.i));
+      const seasons = det.filter(isSeasonNode);
+      frs.fr[K(root)] = { n: seasons.length, m: det.length - seasons.length, ep: seasons.reduce((t, x) => t + (x.eps || 0), 0), cap: capped, list: det.map(x => [x.id, x.t, x.type, x.eps || 0, x.y || 0, isSeasonNode(x) ? 1 : 0]) };
+      det.forEach(x => { frs.root[K(x.id)] = root; });
+    }
+    back.forEach(x => { frs.root[K(x)] = root; });
+    saveFr();
+    return frView(id);
+  })();
+  frBusy.set(id, p);
+  p.finally(() => frBusy.delete(id)).catch(() => {});
+  return p;
+}
+
 /* ================= Modelo ================= */
 const imgOf = a => a?.images?.webp?.large_image_url || a?.images?.jpg?.large_image_url || a?.images?.jpg?.image_url || '';
 const toItem = a => ({
@@ -754,6 +852,8 @@ function saveLib() { store.set(LS.lib, lib); store.set(LS.tomb, tomb); updateCou
 function setStatus(a, st) {
   const base = a.mal_id ? toItem(a) : a;
   const id = base.id;
+  const fv = frFor(id);
+  if (fv && fv.root === id) { base.eps = fv.ep || base.eps; base.seasons = fv.n; }
   if (!st) { delete lib[id]; tomb[id] = Date.now(); }
   else {
     const cur = lib[id];
@@ -794,20 +894,31 @@ const epBox = id => {
   if (it?.st !== 'watching') return '';
   return `<span class="epbox" data-epbox="${id}">Ep. <b class="epv">${it.ep || 0}${it.eps ? ' / ' + it.eps : ''}</b> <button data-epinc="${id}" aria-label="Sumar un episodio">+1</button></span>`;
 };
-function cardHTML(it, syn) {
-  const meta = [
+function metaHTML(it) {
+  const f = frFor(it.id);
+  const seasons = f ? (f.root === it.id ? f.n : 0) : (it.seasons || 0);
+  const eps = (f && f.root === it.id && f.ep) ? f.ep : it.eps;
+  return [
     it.type ? `<span>${esc(TYPE_ES[it.type] || it.type)}</span>` : '',
     it.y ? `<span>${it.y}</span>` : '',
-    it.eps ? `<span>${it.eps} ep.</span>` : '',
+    seasons ? `<span class="sb">${seasons}${f && f.cap ? '+' : ''} ${seasons === 1 ? 'temporada' : 'temporadas'}</span>` : '',
+    eps ? `<span>${eps} ep.${seasons > 1 ? ' en total' : ''}</span>` : '',
     it.score ? `<span class="sc">★ ${Number(it.score).toFixed(1)}</span>` : ''
   ].join('');
+}
+function refreshMeta(id) {
+  const it = lib[id] || (animeCache.get(id) && toItem(animeCache.get(id)));
+  if (!it) return;
+  $$(`.card[data-id="${id}"] .meta`).forEach(m => { m.innerHTML = metaHTML(it); });
+}
+function cardHTML(it, syn, pend) {
   const st = lib[it.id]?.st || '';
-  return `<article class="card" data-id="${it.id}" data-st="${st}">
+  return `<article class="card${pend ? ' pend' : ''}" data-id="${it.id}" data-st="${st}">
     <div class="poster">${it.img ? `<img loading="lazy" decoding="async" referrerpolicy="no-referrer" src="${esc(it.img)}" alt="">` : ''}</div>
     <div class="cbody">
       <h3><button class="open" data-open="${it.id}">${esc(it.t)}</button></h3>
       ${(it.es || it.en) ? `<p class="alt">${esc(it.es || it.en)}</p>` : ''}
-      <div class="meta">${meta}</div>
+      <div class="meta">${metaHTML(it)}</div>
       ${syn ? `<p class="syn" data-syn="${it.id}">${esc((prefs.es && trStore.c[it.id]) || syn)}</p>` : ''}
     </div>
     <div class="cfoot">${stBtn(it.id)}${epBox(it.id)}</div>
@@ -904,10 +1015,13 @@ async function loadMore(reset) {
     ex.total = r.pagination?.items?.total ?? ex.total;
     const fresh = (r.data || []).filter(a => !ex.seen.has(a.mal_id));
     fresh.forEach(a => { ex.seen.add(a.mal_id); animeCache.set(a.mal_id, a); });
-    ex.shown += fresh.length;
-    exGrid.insertAdjacentHTML('beforeend', fresh.map(a => cardHTML(toItem(a), shortSyn(a.synopsis))).join(''));
+    const seqState = a => { const c = mainPrevCached(a.mal_id); return c !== undefined ? !!c : (SEQ_RE.test(a.title || '') ? 'pend' : false); };
+    const vis = fresh.filter(a => seqState(a) !== true);     // las secuelas ya conocidas ni se dibujan
+    ex.shown += vis.length;
+    exGrid.insertAdjacentHTML('beforeend', vis.map(a => cardHTML(toItem(a), shortSyn(a.synopsis), seqState(a) === 'pend')).join(''));
     watchSyns(exGrid);
-    if (!ex.shown) exMsg.innerHTML = '<div class="msg">No hay resultados con estos filtros. Probá con otra letra o cambiá el tipo.</div>';
+    resolveCards(exGrid);
+    if (!ex.shown) exMsg.innerHTML = ex.next ? '<div class="msg">Esta tanda eran temporadas de otros anime, que se muestran agrupadas. Tocá “Cargar más títulos”.</div>' : '<div class="msg">No hay resultados con estos filtros. Probá con otra letra o cambiá el tipo.</div>';
     exMore.hidden = !ex.next;
     updateCount();
   } catch (e) {
@@ -918,6 +1032,48 @@ async function loadMore(reset) {
   } finally {
     if (gen === ex.gen) ex.loading = false;
   }
+}
+const frObs = new IntersectionObserver(es => {
+  es.forEach(en => { if (en.isIntersecting) { frObs.unobserve(en.target); computeBadge(en.target); } });
+}, { rootMargin: '200px' });
+function onFranchise(id, f) {
+  [id, f.root].forEach(x => {
+    refreshMeta(x);
+    const it = lib[x];
+    if (it && x === f.root) {
+      let ch = false;
+      if (f.ep && it.eps !== f.ep) { it.eps = f.ep; ch = true; }
+      if (it.seasons !== f.n) { it.seasons = f.n; ch = true; }
+      if (ch) saveLib();
+    }
+  });
+}
+async function computeBadge(card) {
+  const id = +card.dataset.id;
+  if (frFor(id)) { refreshMeta(id); return; }
+  try { const f = await getFranchise(id, false); if (f) onFranchise(id, f); } catch {}
+}
+function collapseCard(card) {
+  if (!card.isConnected) return;
+  card.remove(); ex.shown = Math.max(0, ex.shown - 1); updateCount();
+  if (!exGrid.querySelector('.card') && !ex.loading) exMsg.innerHTML = ex.next ? '<div class="msg">Esta tanda eran temporadas de otros anime, que se muestran agrupadas. Tocá “Cargar más títulos”.</div>' : '<div class="msg">No hay más títulos con estos filtros.</div>';
+}
+async function resolveHide(card) {
+  const id = +card.dataset.id;
+  try {
+    const mp = await mainPrev(id, false);
+    if (!card.isConnected) return;
+    if (mp) { collapseCard(card); return; }
+    card.classList.remove('pend');
+    frObs.observe(card);
+  } catch { card.classList.remove('pend'); }
+}
+function resolveCards(root) {
+  $$('.card[data-id]:not([data-fr])', root).forEach(c => {
+    c.dataset.fr = '1';
+    if (frFor(+c.dataset.id)) { c.classList.remove('pend'); return; }
+    resolveHide(c);
+  });
 }
 function resetExplorer() { markActiveLetter($('#exLetters'), ex.q ? null : ex.letter); loadMore(true); }
 
@@ -1019,7 +1175,7 @@ $('#impFile').addEventListener('change', async e => {
     src.forEach(i => {
       if (!i || !i.id || !STATUS[i.st]) return;
       const cur = lib[i.id];
-      if ((!cur || (i.ts || 0) > (cur.ts || 0)) && (i.ts || Date.now()) > (tomb[i.id] || 0)) { delete tomb[i.id]; cloudDirty(+i.id); lib[i.id] = { id: +i.id, t: String(i.t || ''), en: String(i.en || ''), img: String(i.img || ''), y: i.y || null, type: i.type || '', eps: i.eps || null, score: i.score || null, st: i.st, ep: +i.ep || 0, ts: i.ts || Date.now() }; n++; }
+      if ((!cur || (i.ts || 0) > (cur.ts || 0)) && (i.ts || Date.now()) > (tomb[i.id] || 0)) { delete tomb[i.id]; cloudDirty(+i.id); lib[i.id] = { id: +i.id, t: String(i.t || ''), en: String(i.en || ''), es: String(i.es || ''), img: String(i.img || ''), y: i.y || null, type: i.type || '', eps: i.eps || null, seasons: +i.seasons || 0, score: i.score || null, st: i.st, ep: +i.ep || 0, ts: i.ts || Date.now() }; n++; }
     });
     saveLib(); renderMine();
     toast(n ? `Se importaron ${n} títulos` : 'No había nada nuevo para importar');
@@ -1059,7 +1215,29 @@ async function openModal(id) {
       if (curId === id) renderModal(a, lib[id]);
     } catch { if (curId === id && $('#mSyn')) $('#mSyn').textContent = 'No se pudo cargar la descripción. Cerrá la ficha y probá de nuevo en unos segundos.'; }
   }
+  if (curId === id) loadSeasons(id);
   if (curId === id) loadCharacters(id);
+}
+async function loadSeasons(id) {
+  const box = $('#mSeas'); if (!box) return;
+  const c = frView(id);
+  if (c) { renderSeasons(id, c); return; }
+  box.innerHTML = '<h4>Temporadas</h4><p class="muted">Calculando temporadas…</p>';
+  try { const f = await getFranchise(id, true); if (curId !== id) return; renderSeasons(id, f); onFranchise(id, f); }
+  catch { if (curId === id && $('#mSeas')) $('#mSeas').innerHTML = '<h4>Temporadas</h4><p class="muted">No se pudieron calcular ahora. <button class="linkbtn" data-seas-retry>Reintentar</button></p>'; }
+}
+function renderSeasons(id, f) {
+  const box = $('#mSeas'); if (!box || !f) return;
+  const seas = f.list.filter(x => x[5]), extra = f.list.filter(x => !x[5]);
+  if (!seas.length && f.list.length <= 1) { box.innerHTML = ''; return; }     // película u OVA suelto
+  const info = x => `<em>${[x[4] || '', x[3] ? x[3] + ' ep.' : ''].filter(Boolean).join(', ')}</em>`;
+  const row = (x, label) => `<div class="seasrow${x[0] === id ? ' cur' : ''}"><div><b>${esc(label)}</b><span>${esc(x[1])}</span></div>${info(x)}</div>`;
+  const parts = [];
+  if (seas.length) parts.push(`${f.n}${f.cap ? '+' : ''} ${f.n === 1 ? 'temporada' : 'temporadas'}`);
+  if (f.ep) parts.push(`${nf.format(f.ep)} episodios en total`);
+  if (extra.length) parts.push(`${extra.length} ${extra.length === 1 ? 'película, OVA o especial' : 'películas, OVAs y especiales'}`);
+  box.innerHTML = `<h4>Temporadas</h4><p class="seassum">${esc(parts.join(', '))}.</p>
+    <div class="seaslist">${seas.map((x, k) => row(x, 'Temporada ' + (k + 1))).join('')}${extra.map(x => row(x, TYPE_ES[x[2]] || x[2] || 'Extra')).join('')}</div>`;
 }
 function renderModal(a, it) {
   const base = a ? toItem(a) : it;
@@ -1089,6 +1267,7 @@ function renderModal(a, it) {
       <button class="linkbtn" id="trBtn" hidden>Traducir al español</button>
     </div>
     ${genres.length ? `<div class="msec"><h4>Géneros y temas</h4><div class="chips" style="margin:0">${genres.map(g => `<span class="tag">${esc(g)}</span>`).join('')}</div></div>` : ''}
+    <div class="msec" id="mSeas"></div>
     <div class="msec">
       <h4>Personajes <span class="muted" id="chCount" style="font:400 .9rem 'DM Sans',sans-serif"></span></h4>
       <div class="chtools">
@@ -1147,6 +1326,7 @@ mBody.addEventListener('click', e => {
   if (e.target.closest('[data-epm]')) return bumpEp(curId, -1);
   if (e.target.closest('[data-epp]')) return bumpEp(curId, 1);
   if (e.target.closest('[data-retry]')) return loadCharacters(curId);
+  if (e.target.closest('[data-seas-retry]')) return loadSeasons(curId);
 });
 modal.addEventListener('click', e => { if (e.target === modal) modal.close(); });
 modal.addEventListener('close', () => {
@@ -1204,11 +1384,12 @@ const gEs = n => GENRES_ES[n] || n;
 const trStore = { c: store.get(LS.trc, {}), f: store.get(LS.tr, {}), h: store.get(LS.trh, {}) };
 const TR_CAP = { c: 700, f: 90, h: 160 };
 let trSaveT;
+function flushTr() { clearTimeout(trSaveT); store.set(LS.trc, trStore.c); store.set(LS.tr, trStore.f); store.set(LS.trh, trStore.h); }
 function putTr(kind, id, val) {
   const m = trStore[kind]; delete m[id]; m[id] = val;
   const ks = Object.keys(m); if (ks.length > TR_CAP[kind]) delete m[ks[0]];
   clearTimeout(trSaveT);
-  trSaveT = setTimeout(() => { store.set(LS.trc, trStore.c); store.set(LS.tr, trStore.f); store.set(LS.trh, trStore.h); }, 800);
+  trSaveT = setTimeout(flushTr, 800);
 }
 
 const decode = s => { const t = document.createElement('textarea'); t.innerHTML = s; return t.value; };
@@ -1699,7 +1880,7 @@ function startSync() {
 }
 function resync() { if (!cloud.user) return; stopSync(); startSync(); }
 
-const cleanItem = r => ({ id: +r.id, t: String(r.t || ''), en: String(r.en || ''), es: String(r.es || ''), img: String(r.img || ''), y: r.y || null, type: String(r.type || ''), eps: r.eps || null, score: r.score || null, st: r.st, ep: +r.ep || 0, ts: +r.ts || 0 });
+const cleanItem = r => ({ id: +r.id, t: String(r.t || ''), en: String(r.en || ''), es: String(r.es || ''), img: String(r.img || ''), y: r.y || null, type: String(r.type || ''), eps: r.eps || null, seasons: +r.seasons || 0, score: r.score || null, st: r.st, ep: +r.ep || 0, ts: +r.ts || 0 });
 // Une lo de la nube con lo local: para cada anime gana el cambio más reciente.
 function reconcile(remote) {
   let changed = false;
@@ -1739,7 +1920,7 @@ function cloudPush(ops) {
     const batch = F.writeBatch(db);
     ops.slice(k, k + 400).forEach(op => {
       const isSet = op[0] === 'set', id = isSet ? op[1].id : op[1];
-      const data = isSet ? (({ id, t, en, es, img, y, type, eps, score, st, ep, ts }) => ({ id, t, en: en || '', es: es || '', img: img || '', y: y || null, type: type || '', eps: eps || null, score: score || null, st, ep: ep || 0, ts: ts || 0 }))(op[1]) : { id, deleted: true, ts: op[2] };
+      const data = isSet ? (({ id, t, en, es, img, y, type, eps, seasons, score, st, ep, ts }) => ({ id, t, en: en || '', es: es || '', img: img || '', y: y || null, type: type || '', eps: eps || null, seasons: seasons || 0, score: score || null, st, ep: ep || 0, ts: ts || 0 }))(op[1]) : { id, deleted: true, ts: op[2] };
       batch.set(F.doc(db, 'users', user.uid, 'items', String(id)), data);
     });
     batch.commit().catch(e => { cloud.blockPush = true; setCloud('error', cloudErr(e)); });
@@ -1802,6 +1983,11 @@ $('#cloudIn').addEventListener('click', async e => {
 });
 window.addEventListener('online', () => { if (cloud.user && cloud.state === 'offline') resync(); });
 window.addEventListener('offline', () => { if (cloud.user) setCloud('offline'); });
+
+// guardar lo pendiente apenas se cierra la página o se cambia de pestaña
+const flushAll = () => { flushFr(); if (trSaveT) flushTr(); };
+window.addEventListener('pagehide', flushAll);
+document.addEventListener('visibilitychange', () => { if (document.hidden) flushAll(); });
 
 /* ================= Clicks globales ================= */
 document.addEventListener('click', e => {
@@ -1895,9 +2081,10 @@ async function loadShowcase() {
   } catch {}
   if (tops.length) {
     tops.forEach(a => { if (!animeCache.has(a.mal_id)) animeCache.set(a.mal_id, a); });
-    $('#fan').innerHTML = tops.slice(0, 5).map(a => `<button class="fc" data-open="${a.mal_id}" aria-label="${esc(a.title)}"><img src="${esc(imgOf(a))}" alt="" referrerpolicy="no-referrer"></button>`).join('');
+    const feat = (() => { const f = tops.filter(a => !SEQ_RE.test(a.title || '')); return f.length >= 12 ? f : tops; })();
+    $('#fan').innerHTML = feat.slice(0, 5).map(a => `<button class="fc" data-open="${a.mal_id}" aria-label="${esc(a.title)}"><img src="${esc(imgOf(a))}" alt="" referrerpolicy="no-referrer"></button>`).join('');
     const item = (a, dup) => `<button class="mq" data-open="${a.mal_id}" ${dup ? 'tabindex="-1" aria-hidden="true"' : ''}><div class="im"><img loading="lazy" src="${esc(imgOf(a))}" alt="" referrerpolicy="no-referrer"></div><b>${esc(a.title)}</b></button>`;
-    $('#car').innerHTML = tops.map(a => item(a, false)).join('') + tops.map(a => item(a, true)).join('');
+    $('#car').innerHTML = feat.map(a => item(a, false)).join('') + feat.map(a => item(a, true)).join('');
     $('#mqSec').hidden = false;
     initCarousel();
     $('#vis1').innerHTML = ['A', 'B', 'C', 'D', 'S', 'T'].map(l => `<span class="lb ${l === 'S' ? 'on' : ''}">${l}</span>`).join('');
